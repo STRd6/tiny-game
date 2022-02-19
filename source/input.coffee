@@ -1,3 +1,5 @@
+{noop} = require "./util"
+
 # 5 bytes of data to represent the controller. Can be a slice of a byte array
 InputSnapshot = (bytes) ->
   this.data = bytes
@@ -65,6 +67,7 @@ Object.defineProperties InputSnapshot::,
     ]
 
 ## Gamepads
+# TODO: de-globalize this listener
 window.addEventListener "gamepadconnected", ({gamepad}) ->
   {index, id, buttons, axes} = gamepad
   console.log """
@@ -403,3 +406,10 @@ module.exports = InputSystem = (game) ->
 
       controllerMap.clear()
       controllers.length = 0
+
+Object.assign module.exports, {
+  BufferedController
+  Gamepad
+  InputSnapshot
+  KeyboardController
+}

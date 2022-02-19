@@ -1,38 +1,38 @@
-# TODO: better isolate global `window.app`
-
 # Base type behaviors for display system
 # each `camera` gets added to stage
 # each `object` gets added to all cameras
 # each `hud` gets added to stage
 # each `component` gets added to parent object
+{noop} = require "./util"
+
 module.exports = DisplaySystem = (game) ->
-  window.screenWidth = 640
-  window.screenHeight = 360
+  {screenWidth, screenHeight} = game.config
 
   cameraMap = new Map
   cameras = []
   huds = {}
 
-  Object.assign PIXI.settings,
-    SCALE_MODE: PIXI.SCALE_MODES.NEAREST
+  if !TEST?
+    Object.assign PIXI.settings,
+      SCALE_MODE: PIXI.SCALE_MODES.NEAREST
 
-  window.app = app = new PIXI.Application
-    width: screenWidth
-    height: screenHeight
-    backgroundColor: 0x323C39
+    app = new PIXI.Application
+      width: screenWidth
+      height: screenHeight
+      backgroundColor: 0x323C39
 
-  # Take more control of render step
-  app._ticker.remove(app.render, app)
+    # Take more control of render step
+    app._ticker.remove(app.render, app)
 
-  adjustResolution = ->
-    res = floor min window.innerWidth / screenWidth, window.innerHeight / screenHeight
-    renderer = app.renderer
+    adjustResolution = ->
+      res = floor min window.innerWidth / screenWidth, window.innerHeight / screenHeight
+      renderer = app.renderer
 
-    renderer.plugins.interaction.resolution = renderer.resolution = res
-    renderer.resize(screenWidth, screenHeight)
+      renderer.plugins.interaction.resolution = renderer.resolution = res
+      renderer.resize(screenWidth, screenHeight)
 
-  window.addEventListener "resize", adjustResolution
-  adjustResolution()
+    window.addEventListener "resize", adjustResolution
+    adjustResolution()
 
   # Fullscreen
   document.addEventListener "keydown", (e) ->

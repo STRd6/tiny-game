@@ -1,4 +1,3 @@
-{BitmapText, Container, NineSlicePlane, Sprite, Texture, TilingSprite} = PIXI
 {PI, abs, atan2, ceil, cos, floor, max, min, pow, random, sin, sign} = Math
 
 ## Util

@@ -2,6 +2,12 @@
 # stuff for the engine itself, not involved with editing, just running the game
 # and providing the base environment
 
+{DataType, StateManager, randId} = require "./util"
+
+DisplaySystem = require "./display"
+InputSystem = require "./input"
+NetworkSystem = require "./network"
+
 # Game engine itself, very much work in progress
 
 mapBehaviors = (tags, table) ->
@@ -349,7 +355,7 @@ BaseSystem = (game) ->
         b.destroy?(e)
       return
 
-Engine =
+module.exports = Engine =
   Game: (options) ->
     # Need to start above zero so we can use negatives to represent client
     # predicted objects
@@ -398,6 +404,10 @@ Engine =
         displaySystem.create(self)
 
         return self.behaviors
+
+      config:
+        screenWidth: 640
+        screenHeight: 360
 
       # Create / Initialize each subsystem
       create: ->

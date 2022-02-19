@@ -1,6 +1,12 @@
+Engine = require "../source/index"
+
 {createEnum} = require "../source/util"
 
 describe "Engine", ->
+  describe "Game", ->
+    it "should create", ->
+      Engine.Game()
+
   describe "Enum", ->
     E = createEnum """
       sick

@@ -1,4 +1,12 @@
 ## UI Helpers for PIXI.js
+{
+  BitmapText
+  Container
+  NineSlicePlane
+  Sprite
+  Texture
+  TilingSprite
+} = PIXI
 
 UIButton = (text, action) ->
   text = new BitmapText text,

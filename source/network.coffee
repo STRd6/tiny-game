@@ -1,15 +1,7 @@
 # Network Experiments
+# max cross browser data packet size is 16 * 1024
 
-###
-TODO
-===
-
-Need to override `send` and `_handleDataMessage` of the peerjs dataconnection to
-get full control over the serialization and data channel.
-
-max cross browser data packet size is 16 * 1024
-
-###
+{DataStream, noop} = require "./util"
 
 module.exports = NetworkSystem = (game) ->
 
@@ -88,6 +80,10 @@ module.exports = NetworkSystem = (game) ->
 
       @close()
 
+  ###
+  Override `send` and `_handleDataMessage` of the peerjs dataconnection to
+  gain full control over the serialization and data channel.
+  ###
   modifyDataConnection = (c) ->
     Object.assign c,
       _handleDataMessage: _handleDataMessage
