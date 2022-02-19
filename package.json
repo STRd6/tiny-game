@@ -13,10 +13,21 @@
     "mocha": "^9.2.0",
     "pixi.js": "^6.2.2"
   },
+  "mocha": {
+    "extension": ["coffee"],
+    "require": [
+      "coffeescript/register",
+      "coffee-coverage/register-istanbul",
+      "./test/helper.coffee"
+    ],
+    "reporter": "spec",
+    "recursive": true,
+    "spec": ["test"]
+  },
   "scripts": {
     "browser": "bash script/browser",
-    "coverage": "bash script/coverage",
+    "coverage": "istanbul report",
     "prepublish": "bash script/prepublish",
-    "test": "bash script/test"
+    "test": "mocha"
   }
 }
