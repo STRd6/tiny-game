@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+
+mkdir --parents dist
+
+# normal files
+./node_modules/.bin/coffee \
+  --bare \
+  --compile \
+  --output dist/ \
+  source/

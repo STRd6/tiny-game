@@ -1,0 +1,3 @@
+#!/bin/bash
+
+./node_modules/.bin/browserify dist/index.js --standalone TinyGame > dist/tiny-game.js
