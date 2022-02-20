@@ -1,5 +1,48 @@
 # extensions beyond system (fs, etc.)
 
+{floor} = Math
+
+{toHex} = require "./util"
+
+{Rectangle, Texture} = PIXI
+
+## Tilemaps
+
+defaultPalette = """
+#000000
+#222034
+#45283C
+#663931
+#8F563B
+#DF7126
+#D9A066
+#EEC39A
+#FBF236
+#99E550
+#6ABE30
+#37946E
+#4B692F
+#524B24
+#323C39
+#3F3F74
+#306082
+#5B6EE1
+#639BFF
+#5FCDE4
+#CBDBFC
+#FFFFFF
+#9BADB7
+#847E87
+#696A6A
+#595652
+#76428A
+#AC3232
+#D95763
+#D77BBA
+#8F974A
+#8A6F30
+""".toLowerCase().split("\n")
+
 loadSpritesheet = (path) ->
   fs.read(path)
   .then Image.fromBlob
@@ -64,3 +107,8 @@ parseLevel = (path, palette=defaultPalette) ->
       width
       height
     }
+
+module.exports = {
+  loadSpritesheet
+  parseLevel
+}

@@ -4,6 +4,7 @@
 # each `hud` gets added to stage
 # each `component` gets added to parent object
 {noop} = require "./util"
+{floor, min} = Math
 
 module.exports = DisplaySystem = (game) ->
   {screenWidth, screenHeight} = game.config
@@ -80,6 +81,7 @@ module.exports = DisplaySystem = (game) ->
             addComponentToCamera(e, b, name, camera)
 
   self =
+    app: app
     name: "display"
     camera:
       create: (e, behavior) ->

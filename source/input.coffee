@@ -1,4 +1,4 @@
-{noop} = require "./util"
+{noop, triggerToNibble, axisToNibble, nibbleToAxis} = require "./util"
 
 # 5 bytes of data to represent the controller. Can be a slice of a byte array
 InputSnapshot = (bytes) ->

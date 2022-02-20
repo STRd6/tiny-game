@@ -25,7 +25,7 @@
     "spec": ["test"]
   },
   "scripts": {
-    "browser": "bash script/browser",
+    "browser": "bash script/prepublish && bash script/browser",
     "coverage": "istanbul report",
     "prepublish": "bash script/prepublish",
     "test": "mocha"

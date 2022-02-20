@@ -1,4 +1,7 @@
 ## UI Helpers for PIXI.js
+
+{min} = Math
+
 {
   BitmapText
   Container
