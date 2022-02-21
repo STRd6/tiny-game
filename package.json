@@ -6,8 +6,8 @@
   "devDependencies": {
     "browserify": "^17.0.0",
     "canvas": "^2.9.0",
-    "coffee-coverage": "github:benbria/coffee-coverage#ce60bd121cb888bbd339c4b1240cb1d9f19ca3cf",
-    "coffeescript": "2.0.2",
+    "@danielx/coffeecoverage": "0.0.2-pre",
+    "coffeescript": "2.4.1",
     "istanbul": "0.4.4",
     "jsdom": "^19.0.0",
     "mocha": "^9.2.0",
@@ -17,7 +17,7 @@
     "extension": ["coffee"],
     "require": [
       "coffeescript/register",
-      "coffee-coverage/register-istanbul",
+      "@danielx/coffeecoverage/register-istanbul",
       "./test/helper.coffee"
     ],
     "reporter": "spec",

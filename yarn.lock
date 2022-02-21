@@ -2,6 +2,17 @@
 # yarn lockfile v1
 
 
+"@danielx/coffeecoverage@0.0.2-pre":
+  version "0.0.2-pre"
+  resolved "https://registry.yarnpkg.com/@danielx/coffeecoverage/-/coffeecoverage-0.0.2-pre.tgz#f0f03db0ec1852b25c1cc9fb4b72834f7a310e8c"
+  integrity sha512-dCuwnLQu4Lftz4nKrk8XQ+F2mgiewTgu8OglJ2LvDB34Z2gUJ5BpunAeGICEYvgqOd0H+zdKbmf661I2mhhnuw==
+  dependencies:
+    argparse "^1.0.2"
+    coffeescript "2.6.1"
+    lodash "^4.14.0"
+    minimatch "^3.0.2"
+    pkginfo ">=0.2.3"
+
 "@mapbox/node-pre-gyp@^1.0.0":
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/@mapbox/node-pre-gyp/-/node-pre-gyp-1.0.8.tgz#32abc8a5c624bc4e46c43d84dfb8b26d33a96f58"
@@ -651,22 +662,12 @@ cliui@^7.0.2:
     strip-ansi "^6.0.0"
     wrap-ansi "^7.0.0"
 
-"coffee-coverage@github:benbria/coffee-coverage#ce60bd121cb888bbd339c4b1240cb1d9f19ca3cf":
-  version "0.0.0-semantic-release"
-  resolved "https://codeload.github.com/benbria/coffee-coverage/tar.gz/ce60bd121cb888bbd339c4b1240cb1d9f19ca3cf"
-  dependencies:
-    argparse "^1.0.2"
-    coffeescript "^2.0.2"
-    lodash "^4.14.0"
-    minimatch "^3.0.2"
-    pkginfo ">=0.2.3"
+coffeescript@2.4.1:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/coffeescript/-/coffeescript-2.4.1.tgz#815fd337df0a34d49e74a98a6ebea9c3e7930f70"
+  integrity sha512-34GV1aHrsMpTaO3KfMJL40ZNuvKDR/g98THHnE9bQj8HjMaZvSrLik99WWqyMhRtbe8V5hpx5iLgdcSvM/S2wg==
 
-coffeescript@2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/coffeescript/-/coffeescript-2.0.2.tgz#065702a484b46194b8c7eb08481e6d4dc38b87c9"
-  integrity sha512-/bCMyzu7KSJPF2gRNYWpbEmfPkNL8AzXs78ktxhPTpSXlKetZRl7kIYGqU055UqUVnkKRJK4eUkUhRHQpvdilA==
-
-coffeescript@^2.0.2:
+coffeescript@2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/coffeescript/-/coffeescript-2.6.1.tgz#f9e5d4930e1b8a1c5cfba7f95eebd18694ce58fd"
   integrity sha512-GG5nkF93qII8HmHqnnibkgpp/SV7PSnSPiWsbinwya7nNOe95aE/x2xrKZJFks8Qpko3TNrC+/LahaKgrz5YCg==
