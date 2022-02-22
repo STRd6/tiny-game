@@ -11,15 +11,19 @@ Object.assign global, {
   self
   window
   WebSocket: require 'ws'
-},
-  require 'wrtc'
+}
+, require 'wrtc'
 
-# {peerjs} = require "../vendor/peerjs"
+# Hacky fix for webrtc segfault issue
+# https://github.com/node-webrtc/node-webrtc/issues/636#issuecomment-774171409
+process.on 'beforeExit', process.exit
+
+{peerjs} = require "../vendor/peerjs"
 
 Object.assign global,
   assert: require "assert"
   PIXI: require "pixi.js"
-  # peerjs: peerjs
+  peerjs: peerjs
   Gamepad: -> # stub gamepad
 
 # Stub for testing
