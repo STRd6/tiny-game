@@ -4,17 +4,21 @@
   "main": "index.js",
   "author": "Daniel X Moore",
   "devDependencies": {
+    "@danielx/coffeecoverage": "4.0.0-pre",
     "browserify": "^17.0.0",
     "canvas": "^2.9.0",
-    "@danielx/coffeecoverage": "4.0.0-pre",
     "coffeescript": "2.4.1",
     "istanbul": "0.4.4",
     "jsdom": "^19.0.0",
     "mocha": "^9.2.0",
-    "pixi.js": "^6.2.2"
+    "node-fetch": "^2.6.6",
+    "pixi.js": "^6.2.2",
+    "wrtc": "^0.4.7"
   },
   "mocha": {
-    "extension": ["coffee"],
+    "extension": [
+      "coffee"
+    ],
     "require": [
       "coffeescript/register",
       "@danielx/coffeecoverage/register-istanbul",
@@ -22,7 +26,9 @@
     ],
     "reporter": "spec",
     "recursive": true,
-    "spec": ["test"]
+    "spec": [
+      "test"
+    ]
   },
   "scripts": {
     "browser": "bash script/prepublish && bash script/browser",
