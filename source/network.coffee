@@ -1,7 +1,7 @@
 # Network Experiments
 # max cross browser data packet size is 16 * 1024
 
-{DataStream, noop} = require "./util"
+{DataStream, noop, remove} = require "./util"
 
 module.exports = NetworkSystem = (game) ->
 
@@ -276,7 +276,7 @@ module.exports = NetworkSystem = (game) ->
               
               # Checksum of data properties and protocol
               # sum of number of bytes each class's data uses
-              # this can catch not-always-obvios errors where the client is on
+              # this can catch not-always-obvious errors where the client is on
               # a different version and time would be wasted debugging rather
               # than just refreshing the page.
               serverChecksum = recvStream.getUint32()

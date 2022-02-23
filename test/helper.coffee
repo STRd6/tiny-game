@@ -5,6 +5,7 @@
 # jsdom and Browser environment
 Object.assign global, {
   TEST: true
+  FileReader: window.FileReader
   document
   fetch: require 'node-fetch'
   navigator
