@@ -3,7 +3,7 @@
 # each `object` gets added to all cameras
 # each `hud` gets added to stage
 # each `component` gets added to parent object
-{noop} = require "./util"
+{noop} = require "../util"
 {floor, min} = Math
 
 module.exports = DisplaySystem = (game) ->

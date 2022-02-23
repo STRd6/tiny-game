@@ -18,6 +18,9 @@ describe "TinyGame", ->
 
     TestClass()
 
+    game.addEntity
+      x: 'yolo'
+
     game.update()
 
   describe "Enum", ->

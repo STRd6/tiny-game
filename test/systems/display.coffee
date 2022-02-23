@@ -1,4 +1,4 @@
-Display = require "../source/display"
+Display = require "../../source/systems/display"
 
 describe "Display", ->
   it "should do stuff", ->

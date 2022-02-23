@@ -1,7 +1,7 @@
 # Network Experiments
 # max cross browser data packet size is 16 * 1024
 
-{DataStream, noop, remove} = require "./util"
+{DataStream, noop, remove} = require "../util"
 
 module.exports = NetworkSystem = (game) ->
 

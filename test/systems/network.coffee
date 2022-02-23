@@ -1,4 +1,4 @@
-NetworkSystem = require "../source/network"
+NetworkSystem = require "../../source/systems/network"
 
 describe "network", ->
   it "should do network stuff", (done) ->

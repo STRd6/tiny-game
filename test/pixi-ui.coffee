@@ -1,6 +1,6 @@
 {HealthBar, UIButton} = require "../source/pixi-ui"
 
-describe.skip "PIXI UI", ->
+describe "PIXI UI", ->
   describe "HeathBar", ->
     it "creates a display object", ->
       HealthBar(10)

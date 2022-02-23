@@ -9,12 +9,17 @@ navigator.getGamepads = -> []
 Object.assign global, {
   TEST: true
   FileReader: window.FileReader
+  HTMLImageElement: window.HTMLImageElement
+  HTMLCanvasElement: window.HTMLCanvasElement
+  HTMLVideoElement: window.HTMLVideoElement
+  Image: window.Image
+  WebSocket: require 'ws'
+  XMLHttpRequest: window.XMLHttpRequest
   document
   fetch: require 'node-fetch'
   navigator
   self
   window
-  WebSocket: require 'ws'
 }
 , require 'wrtc'
 
@@ -24,9 +29,29 @@ process.on 'beforeExit', process.exit
 
 {peerjs} = require "../vendor/peerjs"
 
+# PIXI JS shims/stubs
+
+PIXI = require "pixi.js"
+
+bmfd = new PIXI.BitmapFontData()
+Object.assign bmfd,
+  common: [
+    lineHeight: 9
+  ]
+  info: [
+    face: "m5x7",
+    size: 7
+  ]
+  kerning: []
+  page: [
+    file: ""
+  ]
+
+PIXI.BitmapFont.install bmfd, []
+
 Object.assign global,
   assert: require "assert"
-  PIXI: require "pixi.js"
+  PIXI: PIXI
   peerjs: peerjs
   Gamepad: -> # stub gamepad
 

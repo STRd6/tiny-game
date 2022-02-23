@@ -8,8 +8,9 @@
   NineSlicePlane
   Sprite
   Texture
-  TilingSprite
 } = PIXI
+
+Highlight9S = Texture.from "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAQAAAD8IX00AAAAEklEQVQI12P4DwYMQMQApkAAAKdtD/E89U+YAAAAAElFTkSuQmCC"
 
 UIButton = (text, action) ->
   text = new BitmapText text,
@@ -17,7 +18,8 @@ UIButton = (text, action) ->
     tint: 0x222034
   text.x = 2
 
-  bg = new TilingSprite game.textures.buttonBG, text.width + 4, text.height + 4
+  bg = new Sprite Texture.WHITE
+  bg.tint = 0xCBDBFC
   bg.interactive = true
   bg.click = (e) ->
     action.call button, e
@@ -48,7 +50,7 @@ HealthBar = (height) ->
   borderColor = 0xFFFFFF
   width = (pointWidth = 5) + 2
 
-  border = new NineSlicePlane game.textures.highlight_9s, 1, 1, 1, 1
+  border = new NineSlicePlane Highlight9S, 1, 1, 1, 1
   border.tint = borderColor
   border.width = width
   border.height = height
