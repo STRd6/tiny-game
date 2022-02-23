@@ -4,7 +4,10 @@ TinyGame = require "../source/index"
 
 describe "TinyGame", ->
   it "should create", ->
-    TinyGame()
+    game = TinyGame()
+
+    game.create()
+    game.update()
 
   describe "Enum", ->
     E = createEnum """

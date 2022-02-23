@@ -2,6 +2,9 @@
 {window} = new JSDOM("")
 {document, navigator, self, window} = window
 
+# Stub
+navigator.getGamepads = -> []
+
 # jsdom and Browser environment
 Object.assign global, {
   TEST: true
