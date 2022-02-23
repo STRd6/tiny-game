@@ -375,7 +375,7 @@ module.exports = (options) ->
     # assigns the next ID to the entity as well.
     addEntity: (e) ->
       # uppercase ID is ECS entity id.
-      if game.hosting
+      if self.hosting
         e.ID = nextID++
       else # Client entities
         e.ID = -nextID++

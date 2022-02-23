@@ -6,7 +6,18 @@ describe "TinyGame", ->
   it "should create", ->
     game = TinyGame()
 
+    game.behaviors =
+      test:
+        properties:
+          yo: get: ->
+
+    TestClass = game.addClass
+      behaviors: ["test"]
+
     game.create()
+
+    TestClass()
+
     game.update()
 
   describe "Enum", ->
