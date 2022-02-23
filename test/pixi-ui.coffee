@@ -3,8 +3,18 @@
 describe "PIXI UI", ->
   describe "HeathBar", ->
     it "creates a display object", ->
-      HealthBar(10)
+      hb = HealthBar(10)
+
+      hb.health = 10
+      hb.maxHealth = 20
+      hb.regen = 1
 
   describe "UI Button", ->
     it "creates a display object", ->
-      UIButton("Hey", ->)
+      uiButton = UIButton("Hey", ->)
+
+      uiButton.children[0].click()
+
+      uiButton.active
+      uiButton.active = true
+      uiButton.active = false
