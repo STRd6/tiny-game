@@ -1,5 +1,7 @@
 {JSDOM} = require("jsdom")
-{window} = new JSDOM("")
+{window} = new JSDOM "",
+  # Need this for JSDOM to add requestAnimationFrame and cancelAnimationFrame
+  pretendToBeVisual: true
 {document, navigator, self, window} = window
 
 # Stub
