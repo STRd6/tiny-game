@@ -1,4 +1,7 @@
 module.exports = CustomTicker = (fps=60, fn) ->
+  {cancelAnimationFrame, requestAnimationFrame} = window
+  stopped = false
+
   accum = 0
   now = performance.now()
   accumulate = ->
@@ -23,6 +26,7 @@ module.exports = CustomTicker = (fps=60, fn) ->
   , 1
 
   step = ->
+    return if stopped
     _raf = requestAnimationFrame step
     accumulate()
     process()
@@ -30,5 +34,6 @@ module.exports = CustomTicker = (fps=60, fn) ->
   _raf = requestAnimationFrame step
 
   destroy: ->
+    stopped = true
     clearInterval _i
-    canccelAnimationFrame _raf
+    cancelAnimationFrame _raf

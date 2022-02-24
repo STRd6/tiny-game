@@ -5,73 +5,73 @@ describe "JS Features", ->
     describe "accessor descriptors", ->
       it "should not redefine properties", ->
         o = {}
-        
+
         Object.defineProperties o,
           cool: get: -> 'cool'
         assert.equal o.cool, 'cool'
-  
+
         assert.throws ->
           Object.defineProperties o,
             cool: get: -> 'rad'
-  
+
       it "should redefine properties if configurable", ->
         o = {}
-        
+
         Object.defineProperties o,
           cool:
             get: -> 'cool'
             configurable: true
         assert.equal o.cool, 'cool'
-  
+
         Object.defineProperties o,
           cool: get: -> 'rad'
         assert.equal o.cool, 'rad'
-  
+
       it "should cover attributes", ->
         o =
           cool: "heyy"
         assert.equal o.cool, 'heyy'
-  
+
         Object.defineProperties o,
           cool: get: -> 'cool'
         assert.equal o.cool, 'cool'
-  
+
       it "should not stringify in json", ->
         o = {}
-  
+
         Object.defineProperties o,
           cool: get: -> 'cool'
-  
+
         assert.equal JSON.stringify(o), "{}"
-  
+
       it "should work on prototypes", ->
         base = {}
-  
+
         Object.defineProperties base,
           cool: get: -> 'cool'
-  
+
         o = Object.create base
         assert.equal o.cool, 'cool'
-  
+
         o.cool = "wat"
         assert.equal o.cool, 'cool'
 
     describe "data descriptors", ->
       it "should not redefine properties", ->
         o = {}
-        
+
         Object.defineProperties o,
           cool:
             value: 'cool'
         assert.equal o.cool, 'cool'
-  
+
         assert.throws ->
           Object.defineProperties o,
             cool: get: -> 'rad'
 
       it "should not set properties if not writable", ->
         o = {}
-        
+
         Object.defineProperties o,
           cool:
             value: 'cool'
@@ -81,7 +81,7 @@ describe "JS Features", ->
 
       it "should set properties if writable", ->
         o = {}
-        
+
         Object.defineProperties o,
           cool:
             value: 'cool'
@@ -114,9 +114,9 @@ describe "JS Features", ->
 
         o.cool = "rad"
         assert.equal o.cool, "rad"
-        
+
         assert.equal JSON.stringify(o), '{}'
-        
+
       it "should output set enumerable properties in JSON", ->
         o = {}
 
@@ -130,7 +130,7 @@ describe "JS Features", ->
 
         o.cool = "rad"
         assert.equal o.cool, "rad"
-        
+
         assert.equal JSON.stringify(o), '{"cool":"rad"}'
 
       it "should not output inherited properties in JSON", ->
@@ -145,7 +145,7 @@ describe "JS Features", ->
         o = Object.create base
 
         assert.equal JSON.stringify(o), '{}'
-      
+
       it "should output based on inherited toJSON method", ->
         base = {}
 
@@ -168,7 +168,7 @@ describe "JS Features", ->
 
       it "should inherit from prototype but not set to it", ->
         base = {}
-        
+
         Object.defineProperties base,
           cool:
             value: "cool"
@@ -199,3 +199,18 @@ describe "JS Features", ->
 
         assert.throws ->
           a.push "yo"
+
+  describe "timeouts and intervals", ->
+    it "should set and clear", (done) ->
+      v = setInterval ->
+        clearInterval v
+        done()
+      , 1
+
+    it "setTimeout should not call if cleared", (done) ->
+      step = ->
+        t = setTimeout step, 1
+        done new Error "Should not be called"
+
+      clearTimeout setTimeout step
+      done()
