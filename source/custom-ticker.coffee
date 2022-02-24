@@ -1,4 +1,4 @@
-module.exports = CustomTicker = (fps=60, fn) ->
+module.exports = CustomTicker = (fps=60, fn, performance=window.performance) ->
   {cancelAnimationFrame, requestAnimationFrame} = window
   stopped = false
 
