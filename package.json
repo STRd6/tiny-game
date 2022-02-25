@@ -4,10 +4,10 @@
   "main": "index.js",
   "author": "Daniel X Moore",
   "devDependencies": {
-    "@danielx/coffeecoverage": "4.0.0-pre",
+    "@danielx/coffeecoverage": "4.0.0-pre.1",
     "browserify": "^17.0.0",
     "canvas": "^2.9.0",
-    "coffeescript": "2.4.1",
+    "coffeescript": "2.6.1",
     "istanbul": "0.4.4",
     "jsdom": "^19.0.0",
     "mocha": "^9.2.0",

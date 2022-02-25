@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@danielx/coffeecoverage@4.0.0-pre":
-  version "4.0.0-pre"
-  resolved "https://registry.yarnpkg.com/@danielx/coffeecoverage/-/coffeecoverage-4.0.0-pre.tgz#41d6b0ae023889f2731bb8fdf820912d3e89de6b"
-  integrity sha512-zTBhJZnjAjmnGtvRcV2QMnexBCsg4qtj/2Y1Vf45LxGSgvBS6J18Y4PhgrqzzHEDcGvUPryZiiMbAXNzJDHuqQ==
+"@danielx/coffeecoverage@4.0.0-pre.1":
+  version "4.0.0-pre.1"
+  resolved "https://registry.yarnpkg.com/@danielx/coffeecoverage/-/coffeecoverage-4.0.0-pre.1.tgz#f667ad3d12ca08a1ba0211f643e2c6533cf8e5dc"
+  integrity sha512-SuEH1XGUKhAIr7yubSR/qJzfwmMoP0cL02dnd9uJDRnotkOIZlwVy0aGFEYkjjvs2K/IBug/gY52LsHPnYqgBg==
   dependencies:
     argparse "^1.0.2"
     coffeescript "2.6.1"
@@ -688,11 +688,6 @@ code-point-at@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
-
-coffeescript@2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/coffeescript/-/coffeescript-2.4.1.tgz#815fd337df0a34d49e74a98a6ebea9c3e7930f70"
-  integrity sha512-34GV1aHrsMpTaO3KfMJL40ZNuvKDR/g98THHnE9bQj8HjMaZvSrLik99WWqyMhRtbe8V5hpx5iLgdcSvM/S2wg==
 
 coffeescript@2.6.1:
   version "2.6.1"
