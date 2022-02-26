@@ -8,10 +8,10 @@
     "browserify": "^17.0.0",
     "canvas": "^2.9.0",
     "coffeescript": "2.6.1",
-    "istanbul": "0.4.4",
     "jsdom": "^19.0.0",
     "mocha": "^9.2.0",
     "node-fetch": "^2.6.6",
+    "nyc": "^15.1.0",
     "pixi.js": "^6.2.2",
     "wrtc": "^0.4.7"
   },
@@ -30,9 +30,15 @@
       "test"
     ]
   },
+  "nyc": {
+    "reporter": ["lcov", "text"],
+    "extension": [".coffee"],
+    "sourceMap": false,
+    "instrument": false
+  },
   "scripts": {
     "browser": "bash script/prepublish && bash script/browser",
     "prepublish": "bash script/prepublish",
-    "test": "mocha && istanbul report"
+    "test": "nyc mocha"
   }
 }
