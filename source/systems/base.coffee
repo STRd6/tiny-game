@@ -48,7 +48,9 @@ module.exports = (game) ->
     # Initialize behavior table
     tags = Object.keys(behaviors)
     i = 0
-    while tag = tags[i++]
+    l = tags.length
+    while i < l
+      tag = tags[i++]
       behavior = behaviors[tag]
       behavior._tag = tag
 
@@ -77,7 +79,9 @@ module.exports = (game) ->
         behavior._system = game.system.base
 
     i = 0
-    while e = entities[i++]
+    l = entities.length
+    while i < l
+      e = entities[i++]
       e.behaviors = mapBehaviors e.behaviors, behaviors
 
     return
@@ -112,7 +116,9 @@ module.exports = (game) ->
         enumerable: true
 
     i = 0
-    while b = behaviors[i++]
+    l = behaviors.length
+    while i < l
+      b = behaviors[i++]
       assign combinedProperties, b.properties
 
     # Optional implicit class properties in addition to behavior properties
@@ -200,7 +206,9 @@ module.exports = (game) ->
       {updateEntity} = self
 
       i = 0
-      while e = es[i++]
+      l = es.length
+      while i < l
+        e = es[i++]
         updateEntity(e)
 
         if e.destroy
@@ -223,18 +231,19 @@ module.exports = (game) ->
     createEntity: (e) ->
       {behaviors} = e
 
-      # TODO: assign the correct prototype to the entity based on the set of
-      # behaviors
-
       i = 0
-      while b = behaviors[i++]
+      l = behaviors.length
+      while i < l
+        b = behaviors[i++]
         b.create?(e)
       return
 
     updateEntity: (e) ->
       {behaviors} = e
       i = 0
-      while b = behaviors[i++]
+      l = behaviors.length
+      while i < l
+        b = behaviors[i++]
         b.update?(e)
       return
 
@@ -246,7 +255,8 @@ module.exports = (game) ->
     destroyEntity: (e) ->
       {behaviors} = e
       i = behaviors.length
-      while b = behaviors[--i]
+      while i > 0
+        b = behaviors[--i]
         if e.die
           b.die?(e)
         b.destroy?(e)

@@ -35,6 +35,31 @@ describe "TinyGame", ->
 
     game.destroy()
 
+  it "should have a crude checksum for classes", ->
+    game = TinyGame()
+    game.classChecksum()
+
+  describe "buffer loading", ->
+    it "should revert to a previous state", ->
+      game = TinyGame()
+      game.create()
+
+      state = game.dataBuffer()
+
+      game.addEntity {}
+      game.update()
+      assert.equal game.entities.length, 1
+
+      game.reloadBuffer state
+      game.update()
+      assert.equal game.entities.length, 0
+
+    it "should throw an error when reloading an invalid buffer", ->
+      game = TinyGame()
+      assert.throws ->
+        game.reloadBuffer new ArrayBuffer 10
+      , /SNAPSHOT/
+
   describe "Enum", ->
     E = createEnum """
       sick
