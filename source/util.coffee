@@ -14,6 +14,21 @@ approach = (x, t, amount) ->
 clamp = (v, low, high) ->
   max min(v, high), low
 
+mapBehaviors = (tags, table) ->
+  result = []
+  i = 0
+  l = tags.length
+  while i < l
+    tag = tags[i++]
+    behavior = table[tag]
+    if !behavior
+      console.warn "Couldn't find behavior #{JSON.stringify(tag)}"
+      continue
+
+    result.push behavior
+
+  return result
+
 noop = -> return
 
 rand = (n) ->
@@ -55,9 +70,9 @@ stopKeyboardHandler = (e, element, combo) ->
     return false
 
   # stop for input, select, textarea, and content editable
-  return element.tagName == 'INPUT' || 
-    element.tagName == 'SELECT' || 
-    element.tagName == 'TEXTAREA' || 
+  return element.tagName == 'INPUT' ||
+    element.tagName == 'SELECT' ||
+    element.tagName == 'TEXTAREA' ||
     (element.contentEditable && element.contentEditable == 'true')
 
 wrap = (array, index) ->
@@ -193,10 +208,10 @@ do ->
     # of `bytes` directly to the socket.
     bytes: ->
       return @byteView.subarray 0, @position
-  
+
     done: ->
       @position >= @byteLength
-  
+
     reset: ->
       @position = 0
 
@@ -215,20 +230,20 @@ do ->
         bytes[i] = code
 
       @putBytes bytes
-  
+
     getBytes: (length) ->
       p = @position
       result = @byteView.subarray p, p + length
       @position += length
-  
+
       return result
-  
+
     putBytes: (bytes) ->
       @byteView.set(bytes, @position)
       @position += bytes.length
-  
+
       return
-  
+
     ###
     read a MIDI-style variable-length unsigned integer
     (big-endian value in groups of 7 bits,
@@ -243,18 +258,18 @@ do ->
           result *= 0x80
         else
           return result + b
-  
+
     putVarUint: (v) ->
       if v > MAX_SAFE_INTEGER
         throw new Error "Number out of range: #{v} > #{MAX_SAFE_INTEGER}"
-  
+
       b = 0x2000000000000 # 2^49
-  
+
       while b > 1
         if v >= b
           @putUint8( (v / b) | 0x80 )
         b /= 0x80
-  
+
       @putUint8(v & 0x7f)
 
 ###
@@ -386,7 +401,7 @@ DataType =
       enumerable: true
       get: ->
         @$data.getInt16(offset) / precision
-  
+
       set: (v) ->
         @$data.setInt16(offset, v * precision)
 
@@ -410,7 +425,7 @@ DataType =
       enumerable: true
       get: ->
         @$data.getInt8(offset)
-  
+
       set: (v) ->
         @$data.setInt8(offset, clamp v, -0x80, 0x7F)
 
@@ -422,7 +437,7 @@ DataType =
       enumerable: true
       get: ->
         @$data.getInt16(offset)
-  
+
       set: (v) ->
         @$data.setInt16(offset, clamp v, -0x8000, 0x7FFF)
 
@@ -434,7 +449,7 @@ DataType =
       enumerable: true
       get: ->
         @$data.getInt32(offset)
-  
+
       set: (v) ->
         @$data.setInt32(offset, clamp v, -0x80000000, 0x7FFFFFFF)
 
@@ -506,6 +521,7 @@ module.exports = {
   clamp
   createEnum
   floatToUint8
+  mapBehaviors
   nibbleToAxis
   noop
   rand

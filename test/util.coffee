@@ -5,6 +5,7 @@
   axisToNibble
   clamp
   floatToUint8
+  mapBehaviors
   nibbleToAxis
   noop
   rand
@@ -49,6 +50,9 @@ describe "Util", ->
     assert.equal uint8ToFloat(128), 0
     assert.equal uint8ToFloat(0), -1
     assert.equal uint8ToFloat(255), 1
+
+  it "map behaviors", ->
+    mapBehaviors ["not-there"], {}
 
   it "noop", ->
     assert.equal noop(), undefined

@@ -14,6 +14,10 @@ describe "TinyGame", ->
     TestClass = game.addClass
       behaviors: ["test"]
 
+    game.addBehaviors({
+      wat: {}
+    })
+
     game.create()
 
     TestClass()
@@ -22,6 +26,14 @@ describe "TinyGame", ->
       x: 'yolo'
 
     game.update()
+
+    game.debugEntities()
+
+    game.data()
+
+    game.reloadBuffer game.dataBuffer()
+
+    game.destroy()
 
   describe "Enum", ->
     E = createEnum """
@@ -57,7 +69,7 @@ describe "TinyGame", ->
 
     it "should work in switch statements", (done) ->
       state = E.cool
-      
+
       switch state
         when E.sick
           assert false
@@ -79,7 +91,7 @@ describe "TinyGame", ->
           done()
         when 2
           assert false
-          
+
 
     it "should provide a property mapping", ->
       o = Object.defineProperties {},

@@ -1,6 +1,6 @@
 NetworkSystem = require "../../source/systems/network"
 
-describe "network", ->
+describe.skip "network", ->
   it "should do network stuff", (done) ->
     @timeout 5000
     game =
