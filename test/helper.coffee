@@ -7,9 +7,17 @@
 # Stub
 navigator.getGamepads = -> []
 
+# Mock Audio Context
+mockContext =
+  createBufferSource: ->
+    connect: ->
+    start: ->
+
 # jsdom and Browser environment
 Object.assign global, {
   TEST: true
+  AudioContext: ->
+    mockContext
   FileReader: window.FileReader
   HTMLImageElement: window.HTMLImageElement
   HTMLCanvasElement: window.HTMLCanvasElement

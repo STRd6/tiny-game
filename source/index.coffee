@@ -23,6 +23,7 @@ BaseSystem = require "./systems/base"
 DisplaySystem = require "./systems/display"
 InputSystem = require "./systems/input"
 NetworkSystem = require "./systems/network"
+SoundSystem = require "./systems/sound"
 
 module.exports = (options) ->
   # Need to start above zero so we can use negatives to represent client
@@ -236,13 +237,6 @@ module.exports = (options) ->
     entities: []
     entityMap: entityMap
 
-    sound:
-      play: (name) ->
-        # Don't play sounds for network replay
-        # TODO: Maybe need a better name for this
-        return if self.replaying
-        fxxPlayer.play name
-
     execProgram: ->
       system.pkg.exec(self.program)
 
@@ -326,15 +320,17 @@ module.exports = (options) ->
   displaySystem = DisplaySystem(self)
   networkSystem = NetworkSystem(self)
   inputSystem = InputSystem(self)
+  soundSystem = SoundSystem(self)
 
   Object.assign self,
-    systems: [inputSystem, baseSystem, displaySystem, networkSystem]
+    systems: [inputSystem, baseSystem, displaySystem, networkSystem, soundSystem]
     # Table of systems that behaviors map to
     system:
       base: baseSystem
       display: displaySystem
-      network: networkSystem
       input: inputSystem
+      network: networkSystem
+      sound: soundSystem
 
   return self
 

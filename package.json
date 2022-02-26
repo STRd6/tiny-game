@@ -37,7 +37,7 @@
     "instrument": false
   },
   "scripts": {
-    "browser": "bash script/prepublish && bash script/browser",
+    "build": "bash script/prepublish && bash script/browser",
     "prepublish": "bash script/prepublish",
     "test": "nyc mocha"
   }

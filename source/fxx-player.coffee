@@ -15,6 +15,9 @@ module.exports = FXXPlayer = (fxxBuffer, context) ->
   sounds = {}
 
   self =
+    bind: (newContext) ->
+      context = newContext
+
     loadData: (fxxBuffer) ->
       sounds = {}
 
