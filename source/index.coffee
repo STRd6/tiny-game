@@ -238,6 +238,9 @@ module.exports = (options) ->
 
     sound:
       play: (name) ->
+        # Don't play sounds for network replay
+        # TODO: Maybe need a better name for this
+        return if self.replaying
         fxxPlayer.play name
 
     execProgram: ->
