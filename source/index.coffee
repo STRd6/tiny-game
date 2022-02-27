@@ -7,7 +7,6 @@
 CustomTicker = require "./custom-ticker"
 FXXPlayer = require "./fxx-player"
 
-ext = require "./ext"
 {
   DataType
   DataStream
@@ -337,7 +336,6 @@ module.exports = (options) ->
 Object.assign module.exports, {
   CustomTicker
   FXXPlayer
-  ext
   ui
   util
 }
