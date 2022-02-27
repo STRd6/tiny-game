@@ -35,8 +35,7 @@ module.exports = DisplaySystem = (game) ->
   window.addEventListener "resize", adjustResolution
   adjustResolution()
 
-  # Fullscreen
-  document.addEventListener "keydown", (e) ->
+  fullscreenHandler = (e) ->
     {key} = e
     if key is "F11"
       e.preventDefault()
@@ -80,8 +79,11 @@ module.exports = DisplaySystem = (game) ->
           else if type is 'component'
             addComponentToCamera(e, b, name, camera)
 
+    return
+
   self =
     app: app
+    fullscreenHandler: fullscreenHandler
     name: "display"
     camera:
       create: (e, behavior) ->
@@ -93,32 +95,37 @@ module.exports = DisplaySystem = (game) ->
         cameraMap.set e.ID, camera
         cameras.push camera
 
-        # TODO: remove reference to global game object!
         addEntitiesToCamera game.entities, camera
 
         app.stage.addChild camera
 
+        return
+
       render: (e, behavior) ->
         camera = cameraMap.get e.ID
         behavior.render(e, camera)
+        return
 
       destroy: (e) ->
         cameraMap.get(e.ID).destroy
           children: true
         cameraMap.delete e.ID
         cameras = Array.from cameraMap.values()
+        return
 
     # A component of another display object
     component:
       create: (e, behavior, name) ->
         cameras.forEach (camera) ->
           addComponentToCamera(e, behavior, name, camera)
+        return
 
       render: (e, behavior, name) ->
         cameras.forEach (camera) ->
           parent = camera.entityMap.get e.ID
 
           behavior.render e, parent.getChildByName(name)
+        return
 
       destroy: -> # Handled by parent
 
@@ -126,19 +133,21 @@ module.exports = DisplaySystem = (game) ->
       create: (e, behavior) ->
         cameras.forEach (camera) ->
           addObjectToCamera e, behavior, camera
+        return
 
       render: (e, behavior) ->
         cameras.forEach (camera) ->
           displayObject = camera.entityMap.get(e.ID)
           behavior.render e, displayObject
+        return
 
       destroy: (e) ->
         cameras.forEach (camera) ->
-          if displayObject = camera.entityMap.get(e.ID)
-            camera.entityMap.delete(e.ID)
-            if !displayObject.destroyed
-              displayObject.destroy
-                children: true
+          displayObject = camera.entityMap.get(e.ID)
+          camera.entityMap.delete(e.ID)
+          displayObject.destroy
+            children: true
+        return
 
     hud:
       create: (e, behavior, name) ->
@@ -150,10 +159,13 @@ module.exports = DisplaySystem = (game) ->
         huds[key] = hud
         app.stage.addChild hud
 
+        return
+
       render: (e, behavior, name) ->
         key = "#{name}:#{e.ID}"
         hud = huds[key]
         behavior.render(e, hud)
+        return
 
       destroy: (e, behavior, name) ->
         behavior.destroy?(e)
@@ -161,6 +173,7 @@ module.exports = DisplaySystem = (game) ->
         huds[key].destroy
           children: true
         delete huds[key]
+        return
 
     createEntity: (e) ->
       {behaviors} = e
@@ -169,6 +182,7 @@ module.exports = DisplaySystem = (game) ->
         if b._system is self
           {name, type} = b
           self[type].create(e, b, name)
+      return
 
     updateEntity: noop
 
@@ -179,6 +193,7 @@ module.exports = DisplaySystem = (game) ->
         if b._system is self
           {name, type} = b
           self[type].destroy(e, b, name)
+      return
 
     behaviorsAdded: ({behaviors}) ->
       Object.values(behaviors).forEach (b) ->
@@ -187,10 +202,13 @@ module.exports = DisplaySystem = (game) ->
           [_, type, name] = b._tag.split ":"
           b.type = type
           b.name = name
+      return
 
     # When engine is created/initialized
     create: ->
       app._ticker.start()
+      document.addEventListener "keydown", fullscreenHandler
+      return
 
     # game.update
     update: noop
@@ -198,6 +216,7 @@ module.exports = DisplaySystem = (game) ->
     # When engine is destroyed / reset
     destroy: ->
       app._ticker.stop()
+      document.removeEventListener "keydown", fullscreenHandler
 
       cameras.forEach (camera) ->
         camera.destroy
@@ -209,6 +228,8 @@ module.exports = DisplaySystem = (game) ->
         hud.destroy
           children: true
       huds = {}
+
+      return
 
     # When game.render is called
     render: ({entities}) ->
@@ -222,5 +243,7 @@ module.exports = DisplaySystem = (game) ->
             self[type].render(e, b, name)
 
       app.renderer.render(app.stage)
+
+      return
 
   return self
