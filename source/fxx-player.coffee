@@ -35,7 +35,8 @@ module.exports = FXXPlayer = (fxxBuffer, context) ->
         name = parseName fxxData.subarray(p, p + 16)
 
         # Synthesize Waveform
-        buffer = fxxData.subarray(p + 16, p + 116)
+        # TODO: update FXZ to load from backing buffer so we don't need to slice
+        buffer = fxxData.slice(p + 16, p + 116)
         # Add to sounds list
         sounds[name] ||= []
         sounds[name].push FXZ buffer.buffer, context

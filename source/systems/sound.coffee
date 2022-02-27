@@ -2,11 +2,10 @@ FXXPlayer = require "../fxx-player"
 {noop} = require "../util"
 
 module.exports = (game) ->
-  player = null
+  player = FXXPlayer()
 
   self =
-    create: ->
-      player = FXXPlayer()
+    create: noop
     createEntity: noop
     destroy: noop
     destroyEntity: noop
