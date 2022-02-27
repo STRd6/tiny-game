@@ -1,9 +1,12 @@
 TinyGame = require "../source/index"
 
-{createEnum} = require "../source/util"
+# Clean up PIXI tickers after all tests
+after ->
+  PIXI.Ticker.shared.stop()
+  PIXI.Ticker.system.stop()
 
 describe "TinyGame", ->
-  it "should create", ->
+  it "should add classes and behaviors", ->
     game = TinyGame()
 
     game.behaviors =
@@ -11,16 +14,16 @@ describe "TinyGame", ->
         properties:
           yo: get: ->
 
-    TestClass = game.addClass
-      behaviors: ["test"]
-
     game.addBehaviors({
       wat: {}
     })
 
-    game.create()
+    TestClass = game.addClass
+      behaviors: ["test"]
 
     TestClass()
+
+    game.create()
 
     game.addEntity
       x: 'yolo'
@@ -54,90 +57,10 @@ describe "TinyGame", ->
       game.update()
       assert.equal game.entities.length, 0
 
+      game.destroy()
+
     it "should throw an error when reloading an invalid buffer", ->
       game = TinyGame()
       assert.throws ->
         game.reloadBuffer new ArrayBuffer 10
       , /SNAPSHOT/
-
-  describe "Enum", ->
-    E = createEnum """
-      sick
-      cool
-      rad
-      wicked
-    """
-
-    it "should make enums", ->
-      assert E.sick
-      assert E.cool
-
-    it "should store as bytes", ->
-      u = new Uint8Array 3
-
-      u[0] = E.sick
-      u[1] = E.cool
-      u[2] = E.rad
-
-      assert.equal u[0], 0
-      assert.equal u[1], 1
-      assert.equal u[2], 2
-
-    it "should work with instance of", ->
-      assert E.sick instanceof E
-
-    it "should toString", ->
-      assert.equal String(E.sick), "sick"
-
-    it "should toJSON", ->
-      assert.equal JSON.stringify(E.sick), "\"sick\""
-
-    it "should work in switch statements", (done) ->
-      state = E.cool
-
-      switch state
-        when E.sick
-          assert false
-        when E.wicked
-          assert false
-        when E.cool
-          assert true
-          done()
-        else
-          assert false
-
-    it "should work in switch with value", (done) ->
-      state = E.cool
-
-      switch state.value
-        when 0
-          assert false
-        when 1
-          done()
-        when 2
-          assert false
-
-
-    it "should provide a property mapping", ->
-      o = Object.defineProperties {},
-        key:
-          value: 0
-          writable: true
-        state: E.propertyFor "key"
-
-      assert.equal o.state, E.sick
-
-      o.state = E.rad
-
-      assert.equal o.state, E.rad
-      assert.equal o.key, 2
-
-      o.state = E.wicked
-
-      assert.equal o.state, E.wicked
-      assert.equal o.key, 3
-
-    it "should create enums from an array of keys", ->
-      E2 = createEnum ["heyy"]
-
-      assert.equal E2.heyy, 0

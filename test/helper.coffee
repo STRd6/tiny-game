@@ -2,7 +2,14 @@
 {window} = new JSDOM "",
   # Need this for JSDOM to add requestAnimationFrame and cancelAnimationFrame
   pretendToBeVisual: true
-{document, navigator, self, window} = window
+
+{
+  cancelAnimationFrame
+  document
+  navigator
+  self
+  requestAnimationFrame
+} = window
 
 # Stub
 navigator.getGamepads = -> []
@@ -15,7 +22,6 @@ mockContext =
 
 # jsdom and Browser environment
 Object.assign global, {
-  TEST: true
   AudioContext: ->
     mockContext
   FileReader: window.FileReader
@@ -25,9 +31,11 @@ Object.assign global, {
   Image: window.Image
   WebSocket: require 'ws'
   XMLHttpRequest: window.XMLHttpRequest
+  cancelAnimationFrame
   document
   fetch: require 'node-fetch'
   navigator
+  requestAnimationFrame
   self
   window
 }
@@ -41,7 +49,7 @@ process.on 'beforeExit', process.exit
 
 # PIXI JS shims/stubs
 
-PIXI = require "pixi.js"
+PIXI = require "pixi.js-legacy"
 
 bmfd = new PIXI.BitmapFontData()
 Object.assign bmfd,
@@ -64,8 +72,3 @@ Object.assign global,
   PIXI: PIXI
   peerjs: peerjs
   Gamepad: -> # stub gamepad
-
-# Stub for testing
-PIXI.Application = ->
-  _ticker:
-    remove: ->

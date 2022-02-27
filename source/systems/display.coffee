@@ -13,27 +13,27 @@ module.exports = DisplaySystem = (game) ->
   cameras = []
   huds = {}
 
-  if !TEST?
-    Object.assign PIXI.settings,
-      SCALE_MODE: PIXI.SCALE_MODES.NEAREST
+  Object.assign PIXI.settings,
+    SCALE_MODE: PIXI.SCALE_MODES.NEAREST
 
-    app = new PIXI.Application
-      width: screenWidth
-      height: screenHeight
-      backgroundColor: 0x323C39
+  app = new PIXI.Application
+    width: screenWidth
+    height: screenHeight
+    backgroundColor: 0x323C39
 
-    # Take more control of render step
-    app._ticker.remove(app.render, app)
+  # Take more control of render step
+  app._ticker.remove(app.render, app)
+  app._ticker.stop()
 
-    adjustResolution = ->
-      res = floor min window.innerWidth / screenWidth, window.innerHeight / screenHeight
-      renderer = app.renderer
+  adjustResolution = ->
+    res = floor min window.innerWidth / screenWidth, window.innerHeight / screenHeight
+    renderer = app.renderer
 
-      renderer.plugins.interaction.resolution = renderer.resolution = res
-      renderer.resize(screenWidth, screenHeight)
+    renderer.plugins.interaction.resolution = renderer.resolution = res
+    renderer.resize(screenWidth, screenHeight)
 
-    window.addEventListener "resize", adjustResolution
-    adjustResolution()
+  window.addEventListener "resize", adjustResolution
+  adjustResolution()
 
   # Fullscreen
   document.addEventListener "keydown", (e) ->
@@ -88,7 +88,7 @@ module.exports = DisplaySystem = (game) ->
         behavior.create?(e)
         camera = behavior.display(e)
         camera.entity = e
-  
+
         camera.entityMap = new Map
         cameraMap.set e.ID, camera
         cameras.push camera
@@ -107,19 +107,19 @@ module.exports = DisplaySystem = (game) ->
           children: true
         cameraMap.delete e.ID
         cameras = Array.from cameraMap.values()
-  
+
     # A component of another display object
     component:
       create: (e, behavior, name) ->
         cameras.forEach (camera) ->
           addComponentToCamera(e, behavior, name, camera)
-  
+
       render: (e, behavior, name) ->
         cameras.forEach (camera) ->
           parent = camera.entityMap.get e.ID
-  
+
           behavior.render e, parent.getChildByName(name)
-  
+
       destroy: -> # Handled by parent
 
     object:
@@ -131,7 +131,7 @@ module.exports = DisplaySystem = (game) ->
         cameras.forEach (camera) ->
           displayObject = camera.entityMap.get(e.ID)
           behavior.render e, displayObject
-  
+
       destroy: (e) ->
         cameras.forEach (camera) ->
           if displayObject = camera.entityMap.get(e.ID)
@@ -139,22 +139,22 @@ module.exports = DisplaySystem = (game) ->
             if !displayObject.destroyed
               displayObject.destroy
                 children: true
-  
+
     hud:
       create: (e, behavior, name) ->
         key = "#{name}:#{e.ID}"
         behavior.create?(e)
         hud = behavior.display(e)
         hud.EID = e.ID
-  
+
         huds[key] = hud
         app.stage.addChild hud
-  
+
       render: (e, behavior, name) ->
         key = "#{name}:#{e.ID}"
         hud = huds[key]
         behavior.render(e, hud)
-  
+
       destroy: (e, behavior, name) ->
         behavior.destroy?(e)
         key = "#{name}:#{e.ID}"
@@ -169,9 +169,9 @@ module.exports = DisplaySystem = (game) ->
         if b._system is self
           {name, type} = b
           self[type].create(e, b, name)
-  
+
     updateEntity: noop
-  
+
     destroyEntity: (e) ->
       {behaviors} = e
       i = 0
@@ -179,32 +179,37 @@ module.exports = DisplaySystem = (game) ->
         if b._system is self
           {name, type} = b
           self[type].destroy(e, b, name)
-  
-    # When engine is created/initialized
-    create: ({behaviors}) ->
+
+    behaviorsAdded: ({behaviors}) ->
       Object.values(behaviors).forEach (b) ->
         # Annotate display behaviors with type and name
         if b._system is self
           [_, type, name] = b._tag.split ":"
           b.type = type
           b.name = name
-  
+
+    # When engine is created/initialized
+    create: ->
+      app._ticker.start()
+
     # game.update
     update: noop
-  
+
     # When engine is destroyed / reset
     destroy: ->
+      app._ticker.stop()
+
       cameras.forEach (camera) ->
         camera.destroy
           children: true
       cameraMap.clear()
       cameras.length = 0
-  
+
       Object.values(huds).forEach (hud) ->
         hud.destroy
           children: true
       huds = {}
-  
+
     # When game.render is called
     render: ({entities}) ->
       i = 0
@@ -215,7 +220,7 @@ module.exports = DisplaySystem = (game) ->
           if b.display
             {name, type} = b
             self[type].render(e, b, name)
-  
+
       app.renderer.render(app.stage)
 
   return self

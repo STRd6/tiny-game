@@ -13,6 +13,7 @@
     "node-fetch": "^2.6.6",
     "nyc": "^15.1.0",
     "pixi.js": "^6.2.2",
+    "pixi.js-legacy": "^6.2.2",
     "wrtc": "^0.4.7"
   },
   "mocha": {
@@ -36,8 +37,13 @@
     "lines": 64,
     "functions": 59,
     "statements": 63,
-    "reporter": ["lcov", "text"],
-    "extension": [".coffee"],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "extension": [
+      ".coffee"
+    ],
     "sourceMap": false,
     "instrument": false
   },

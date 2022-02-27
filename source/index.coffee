@@ -69,7 +69,7 @@ module.exports = (options) ->
       Object.assign self.behaviors, behaviors
       baseSystem.initBehaviors(self)
       # TODO: Maybe have an `addBehaviors` handler that systems can subscribe to.
-      displaySystem.create(self)
+      displaySystem.behaviorsAdded(self)
 
       return self.behaviors
 
@@ -339,4 +339,3 @@ Object.assign module.exports, {
   ui
   util
 }
-
