@@ -53,9 +53,15 @@ describe "TinyGame", ->
       game.update()
       assert.equal game.entities.length, 1
 
+      nextState = game.dataBuffer()
+
       game.reloadBuffer state
       game.update()
       assert.equal game.entities.length, 0
+
+      game.reloadBuffer nextState
+      game.update()
+      assert.equal game.entities.length, 1
 
       game.destroy()
 
@@ -80,10 +86,17 @@ describe "TinyGame", ->
 
   it "should reload", ->
     game = TinyGame()
-    game.reload
+
+    reloadData =
       seed: 0x123
       tick: 4
       entities:[{
         behaviors: []
         a: "wat"
       }]
+
+    game.reload reloadData
+    game.reload reloadData
+
+    reloadData.entities[0].ID = 5
+    game.reload reloadData
