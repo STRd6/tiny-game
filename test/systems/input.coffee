@@ -24,3 +24,33 @@ describe "Input", ->
     e.gamepad = new Gamepad
     window.dispatchEvent e
     inputSystem.destroy()
+
+  it "should detect input from keyboard controller", ->
+    inputSystem = InputSystem()
+    inputSystem.create()
+
+    e = new window.Event "keydown"
+    e.code = "Space"
+    document.dispatchEvent e
+
+    inputSystem.beforeUpdate
+      replaying: false
+      tick: 0
+      system:
+        network:
+          clientId: "test"
+
+    e = new window.Event "keyup"
+    e.code = "Space"
+    document.dispatchEvent e
+
+    inputSystem.beforeUpdate
+      replaying: true
+      tick: 0
+      system:
+        network:
+          clientId: "test"
+
+    inputSystem.resetControllers(0)
+
+    inputSystem.destroy()
