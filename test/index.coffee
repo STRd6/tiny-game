@@ -64,3 +64,26 @@ describe "TinyGame", ->
       assert.throws ->
         game.reloadBuffer new ArrayBuffer 10
       , /SNAPSHOT/
+
+  it "should exec program", ->
+    game = TinyGame()
+    game.execProgram()
+
+  it "should hard reset", ->
+    game = TinyGame()
+    game.hardReset()
+    game.destroy()
+
+  it "should render", ->
+    game = TinyGame()
+    game.render()
+
+  it "should reload", ->
+    game = TinyGame()
+    game.reload
+      seed: 0x123
+      tick: 4
+      entities:[{
+        behaviors: []
+        a: "wat"
+      }]

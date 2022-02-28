@@ -12,7 +12,30 @@
 } = window
 
 # Stub
-navigator.getGamepads = -> []
+global.system =
+  pkg:
+    exec: ->
+
+# Stub
+
+Gamepad = ->
+  @axes = new Array()
+  @buttons = new Array(17).fill
+    value: 0
+  @id = "Mock Gamepad"
+  @index = 0
+  @mapping = "standard"
+  @timestamp = window.performance.now()
+  @vibrationActuator =
+    playEffect: ->
+    type: "dual-rumble"
+
+  return this
+
+mockGamepad = new Gamepad
+
+navigator.getGamepads = ->
+  [mockGamepad]
 
 # Mock Audio Context
 mockContext =
@@ -71,4 +94,4 @@ Object.assign global,
   assert: require "assert"
   PIXI: PIXI
   peerjs: peerjs
-  Gamepad: -> # stub gamepad
+  Gamepad: Gamepad
