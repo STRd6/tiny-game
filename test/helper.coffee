@@ -19,7 +19,7 @@ global.system =
 # Stub
 
 Gamepad = ->
-  @axes = new Array()
+  @axes = new Array(4).fill(0)
   @buttons = new Array(17).fill
     value: 0
   @id = "Mock Gamepad"
