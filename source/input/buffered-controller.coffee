@@ -1,3 +1,5 @@
+{max} = Math
+
 InputSnapshot = require "./snapshot"
 
 # cid is string source id
@@ -126,7 +128,7 @@ Object.assign BufferedController::,
     # Data insert index
     t = tick - @startTick
 
-    if paused
+    if window.paused
       console.log "T:#{tick} <- BUFFER[#{earliestTickReceived}-#{input.tick}]"
 
     if earliestTickReceived <= tick

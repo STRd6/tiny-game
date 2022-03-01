@@ -62,3 +62,8 @@ cli option.
 
 Also needed to return the init code combined in JS as well as separately in
 coffeeCoverage.coffee and update the places where it is called.
+
+CoffeeScript IntelliSense
+----
+
+https://marketplace.visualstudio.com/items?itemName=phil294.coffeesense

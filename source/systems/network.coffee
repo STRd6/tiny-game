@@ -1,7 +1,9 @@
 # Network Experiments
 # max cross browser data packet size is 16 * 1024
 
+{ceil, min} = Math
 {DataStream, noop, remove} = require "../util"
+InputSnapshot = require "../input/snapshot"
 
 module.exports = NetworkSystem = (game) ->
 
@@ -184,7 +186,7 @@ module.exports = NetworkSystem = (game) ->
                 bytes = recvStream.getBytes length * InputSnapshot.SIZE
 
                 CID = "#{client.peer}-#{client.id}:#{inputId}"
-                if paused
+                if window.paused
                   console.log "T:#{tick} <- INPUT[#{recvTick}]", CID, bytes
                 controller = system.input.getController(inputId, client.id)
                 unless controller
@@ -245,7 +247,7 @@ module.exports = NetworkSystem = (game) ->
     # , 5000
 
     peer.on 'error', console.error
-    
+
     peer.on 'open', ->
       # Can't call connect until open occurs
       conn = peer.connect hostId
@@ -262,18 +264,14 @@ module.exports = NetworkSystem = (game) ->
         conn.send 'hi!'
 
       conn.on 'data', (data) ->
-        if typeof data is "string"
-          stats.received += data.length
-
-          console.log "T:#{game.tick} <- UNKNOWN", data
-        else if data.constructor is ArrayBuffer
+        if data.constructor is ArrayBuffer
           recvStream = new DataStream data
           stats.received += data.byteLength
 
           switch recvStream.getUint8()
             when INIT
               clientId = recvStream.getUint8()
-              
+
               # Checksum of data properties and protocol
               # sum of number of bytes each class's data uses
               # this can catch not-always-obvious errors where the client is on
@@ -307,6 +305,9 @@ module.exports = NetworkSystem = (game) ->
               latestSnapshot.avgRtt = recvStream.getUint16() # ms
             else
               console.log "T:#{game.tick} <- UNKNOWN", data
+        else # string
+          stats.received += data.length
+          console.log "T:#{game.tick} <- UNKNOWN", data
 
   sendStream = new DataStream new ArrayBuffer 16 * 1024
 

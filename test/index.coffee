@@ -100,3 +100,60 @@ describe "TinyGame", ->
 
     reloadData.entities[0].ID = 5
     game.reload reloadData
+
+  it "should send data over the network", (done) ->
+    @timeout 5000
+
+    client = TinyGame()
+    client.create()
+    host = TinyGame()
+    host.create()
+
+    peer = host.hostGame()
+
+    # Register a controller on client and server
+    e = new window.Event "keydown"
+    e.code = "Space"
+    document.dispatchEvent e
+
+    peer.on 'open', (hostId) ->
+      clientPeer = client.joinGame(hostId)
+
+      clientPeer.on 'error', done
+
+      clientPeer.on 'open', ->
+        setTimeout ->
+          try
+            host.update()
+            client.update()
+
+            setTimeout ->
+              host.hosting.connections.forEach (c) ->
+                c.send new Uint8Array 10
+                c.send "wat"
+                c.send new Blob ['wat']
+
+              host.update()
+              host.update()
+              client.update()
+
+              host.system.network.status()
+              client.system.network.status()
+            , 100
+            setTimeout ->
+              host.update()
+              client.update()
+            , 200
+          catch e
+            done e
+
+          setTimeout ->
+            clientPeer.disconnect()
+            peer.disconnect()
+            host.destroy()
+            client.destroy()
+            done()
+          , 500
+        , 500
+
+    peer.on 'error', done

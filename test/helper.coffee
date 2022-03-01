@@ -47,6 +47,7 @@ mockContext =
 Object.assign global, {
   AudioContext: ->
     mockContext
+  Blob: window.Blob
   FileReader: window.FileReader
   HTMLImageElement: window.HTMLImageElement
   HTMLCanvasElement: window.HTMLCanvasElement
