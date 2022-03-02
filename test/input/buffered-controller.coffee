@@ -8,6 +8,12 @@ describe "BufferedController", ->
     b.key
     b.axes
 
+    assert.equal b.lt, 0
+    assert.equal b.rt, 0
+    b.current.data[2] = 0xff
+    assert.equal b.lt, 1
+    assert.equal b.rt, 1
+
     BufferedController.BUTTONS.forEach (btn) ->
       b[btn]
       b.pressed[btn]
@@ -20,7 +26,7 @@ describe "BufferedController", ->
 
     b.startTick = 10
 
-    assert.equal InputSnapshot.NULL, b.recent(1)
+    assert.equal b.recent(1), InputSnapshot.NULL
 
   it "should not set data if in the past ", ->
     b = new BufferedController
