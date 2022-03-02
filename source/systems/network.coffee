@@ -2,7 +2,7 @@
 # max cross browser data packet size is 16 * 1024
 
 {ceil, min} = Math
-{DataStream, noop, remove} = require "../util"
+{DataStream, average, noop, remove} = require "../util"
 InputSnapshot = require "../input/snapshot"
 
 module.exports = NetworkSystem = (game) ->
@@ -104,19 +104,13 @@ module.exports = NetworkSystem = (game) ->
 
   targetTick = 0
 
-  average = (arr) ->
-    if arr.length is 0
-      return
-
-    sum = arr.reduce (a, b) ->
-      a + b
-    , 0
-
-    sum / arr.length
-
   hostGame = ->
     # Close old connections
     hosting.connections?.forEach (conn) -> conn.close()
+    try
+      hosting.peer?.disconnect()
+    catch e
+      console.warn e
     connections = []
 
     nextClientId = 1
@@ -127,8 +121,11 @@ module.exports = NetworkSystem = (game) ->
       existing = clientMap.get(key)
       if existing
         throw new Error "TODO: Handle client reconnection"
-
-      id = nextClientId++
+        remove connections, existing
+        existing.close()
+        id = existing.id
+      else
+        id = nextClientId++
 
       if id > 0xff
         throw new Error "Too many client connections"
@@ -149,7 +146,7 @@ module.exports = NetworkSystem = (game) ->
       console.log "Host connection open!", id
 
     peer.on 'connection', (client) ->
-      console.log 'connection', client
+      # console.log 'connection', client
 
       modifyDataConnection client
 
@@ -208,11 +205,14 @@ module.exports = NetworkSystem = (game) ->
         registerConnection(client)
 
       client.on 'close', ->
-        console.log "Close", client
+        # console.log "Close", client
         if hosting.connections
           remove hosting.connections, client
 
-    game.hosting = hosting = {connections}
+    game.hosting = hosting = {
+      connections
+      peer
+    }
 
     return peer
 
@@ -255,8 +255,10 @@ module.exports = NetworkSystem = (game) ->
 
       modifyDataConnection conn
 
+      peer._conn = conn
+
       conn.on 'close', ->
-        console.log "Closed connection", conn
+        # console.log "Closed connection", conn
         host = null
 
       conn.on 'open', ->
@@ -284,7 +286,7 @@ module.exports = NetworkSystem = (game) ->
 
               self.clientId = clientId
 
-              console.log "Setting clientId: #{clientId}"
+              # console.log "Setting clientId: #{clientId}"
 
             when SNAPSHOT
               seed = recvStream.getUint32()
@@ -372,7 +374,7 @@ module.exports = NetworkSystem = (game) ->
         #   console.log hosting.connections.map (c) ->
         #     c.rtts
 
-        snap = game.dataBuffer()
+        snap = Msg.snapshot(game)
         {connections} = hosting
         i = 0
         while connection = connections[i++]

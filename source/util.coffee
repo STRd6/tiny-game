@@ -11,6 +11,16 @@ approach = (x, t, amount) ->
   else
     t
 
+average = (arr) ->
+  if arr.length is 0
+    return
+
+  sum = arr.reduce (a, b) ->
+    a + b
+  , 0
+
+  sum / arr.length
+
 clamp = (v, low, high) ->
   max min(v, high), low
 
@@ -517,6 +527,7 @@ module.exports = {
   DataType
   StateManager
   approach
+  average
   axisToNibble
   clamp
   createEnum

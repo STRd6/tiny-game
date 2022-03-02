@@ -133,6 +133,8 @@ describe "TinyGame", ->
                 c.send "wat"
                 c.send new Blob ['wat']
 
+              clientPeer._conn.send new Uint8Array 10
+
               host.update()
               host.update()
               client.update()
@@ -149,6 +151,8 @@ describe "TinyGame", ->
 
           setTimeout ->
             clientPeer.disconnect()
+            clientPeer._conn.close()
+            clientPeer._conn.send new Uint8Array 10
             peer.disconnect()
             host.destroy()
             client.destroy()
@@ -157,3 +161,51 @@ describe "TinyGame", ->
         , 500
 
     peer.on 'error', done
+
+  it "should close existing connections when hosting a new game", ->
+    host = TinyGame()
+    host.create()
+
+    host.hostGame()
+
+    called = false
+    host.hosting.connections.push
+      close: ->
+        called = true
+
+    host.localId = Math.random()
+    host.hostGame()
+
+    host.destroy()
+
+    assert called
+
+
+  it.skip "client should reconnect", (done) ->
+    @timeout 5000
+
+    client = TinyGame()
+    client.create()
+    host = TinyGame()
+    host.create()
+
+    peer = host.hostGame()
+    clientPeer = null
+
+    peer.on 'open', (hostId) ->
+      clientPeer = client.joinGame(hostId)
+
+      clientPeer.on 'error', done
+
+      reconnected = false
+      clientPeer.on 'disconnected', ->
+        if !reconnected
+          clientPeer.reconnect()
+
+        reconnected = true
+
+    setTimeout ->
+      clientPeer.disconnect()
+      host.destroy()
+      done()
+    , 500

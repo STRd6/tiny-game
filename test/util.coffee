@@ -2,6 +2,7 @@
   DataType
   StateManager
   approach
+  average
   axisToNibble
   clamp
   floatToUint8
@@ -29,6 +30,9 @@ describe "Util", ->
     assert.equal approach(25, 10, 10), 15
 
     assert.equal approach(10, 10, 1), 10
+
+  it "average", ->
+    assert.equal average([]), undefined
 
   it "axisToNibble <-> nibbleToAxis", ->
     assert.equal axisToNibble(0), 0
