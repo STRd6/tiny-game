@@ -180,6 +180,42 @@ describe "TinyGame", ->
 
     assert called
 
+  it.skip "should discard out of order snapshots", (done) ->
+    @timeout 5000
+
+    client = TinyGame()
+    client.create()
+    host = TinyGame()
+    host.create()
+
+    # Register a controller on client and server
+    e = new window.Event "keydown"
+    e.code = "Space"
+    document.dispatchEvent e
+
+    hostPeer = host.hostGame()
+    clientPeer = null
+
+    hostPeer.on 'open', (hostId) ->
+      clientPeer = client.joinGame(hostId)
+
+      clientPeer.on 'error', done
+
+      clientPeer.on 'open', ->
+        setTimeout ->
+          host.tick = 2
+          host.update()
+          host.tick = 1
+          host.update()
+        , 100
+
+        setTimeout ->
+          hostPeer.disconnect()
+          clientPeer.disconnect()
+          host.destroy()
+          client.destroy()
+          done()
+        , 500
 
   it.skip "client should reconnect", (done) ->
     @timeout 5000

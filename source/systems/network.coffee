@@ -183,8 +183,8 @@ module.exports = NetworkSystem = (game) ->
                 bytes = recvStream.getBytes length * InputSnapshot.SIZE
 
                 CID = "#{client.peer}-#{client.id}:#{inputId}"
-                if window.paused
-                  console.log "T:#{tick} <- INPUT[#{recvTick}]", CID, bytes
+                # console.log "T:#{tick} <- INPUT[#{recvTick}]", CID, bytes
+
                 controller = system.input.getController(inputId, client.id)
                 unless controller
                   controller = system.input.registerController(inputId, client.id, CID, tick)

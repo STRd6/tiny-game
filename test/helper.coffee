@@ -74,6 +74,7 @@ process.on 'beforeExit', process.exit
 # PIXI JS shims/stubs
 
 PIXI = require "pixi.js-legacy"
+PIXI.utils.skipHello()
 
 bmfd = new PIXI.BitmapFontData()
 Object.assign bmfd,
