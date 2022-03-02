@@ -1,6 +1,6 @@
 {max} = Math
 
-InputSnapshot = require "./snapshot"
+{SIZE} = InputSnapshot = require "./snapshot"
 
 # cid is string source id
 # byteId is network identifier
@@ -12,7 +12,7 @@ BufferedController = (id, clientId, description, startTick=-1, bufferSize=Buffer
   @clientId = clientId # uint8
   @description = description # string
 
-  @data = new Uint8Array bufferSize * InputSnapshot.SIZE
+  @data = new Uint8Array bufferSize * SIZE
   @latestData = @startTick = startTick
   @tick = startTick+1 # current tick
 
@@ -41,8 +41,6 @@ Object.assign BufferedController::,
     "#{@clientId}:#{@id} #{@description}"
   # Updates current and prev snapshot pointers
   _update: ->
-    {SIZE} = InputSnapshot
-
     t = @tick - @startTick
     @current.data = @data.subarray(t * SIZE, (t+1) * SIZE)
     @prev.data = @data.subarray((t - 1) * SIZE, t * SIZE)
@@ -62,8 +60,6 @@ Object.assign BufferedController::,
     return @
 
   dataAt: (tick) ->
-    {SIZE} = InputSnapshot
-
     t = tick - @startTick
     @data.subarray(t * SIZE, (t+1) * SIZE)
 
@@ -72,7 +68,6 @@ Object.assign BufferedController::,
   # tick
   recent: (n=15) ->
     t = @tick - @startTick
-    {SIZE} = InputSnapshot
 
     if t <= 0
       return InputSnapshot.NULL
@@ -89,7 +84,6 @@ Object.assign BufferedController::,
 
   # Set the latest snapshot and update the current tick
   set: (tick, data) ->
-    {SIZE} = InputSnapshot
     n = tick - @latestData
     # There is a gap in our buffer but if it's too far back don't fill in
     if 1 < n < 6
@@ -119,7 +113,6 @@ Object.assign BufferedController::,
   # we don't want to change anything in the past before that but we do want to
   # fill up as much input into the future as we have.
   bufferFromNetwork: (tick, input) ->
-    {SIZE} = InputSnapshot
     {data} = input
 
     l = data.length / SIZE
@@ -128,8 +121,7 @@ Object.assign BufferedController::,
     # Data insert index
     t = tick - @startTick
 
-    if window.paused
-      console.log "T:#{tick} <- BUFFER[#{earliestTickReceived}-#{input.tick}]"
+    # console.log "T:#{tick} <- BUFFER[#{earliestTickReceived}-#{input.tick}]"
 
     if earliestTickReceived <= tick
       sliceStartIndex = tick - earliestTickReceived
