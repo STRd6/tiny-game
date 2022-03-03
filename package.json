@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "main": "index.js",
   "author": "Daniel X Moore",
+  "license": "UNLICENSED",
   "devDependencies": {
     "@danielx/coffeecoverage": "4.0.0-pre.1",
     "browserify": "^17.0.0",
