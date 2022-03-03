@@ -20,6 +20,9 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
-    - run: yarn build
-    - name: "Deploy to danielx.net/tiny-game/js/"
+    - name: Install and Build
+      run: |
+        yarn
+        yarn build
+    - name: Deploy to danielx.net/tiny-game/js/
       run: ./script/deploy
