@@ -1,0 +1,8 @@
+#!/bin/bash
+
+set -euo pipefail
+
+aws s3 cp \
+  ./dist/tiny-game.js \
+  s3://whimsy-fs/us-east-1:e4d94092-1099-4c4d-aa01-1dbbf7e1f1df/public/danielx.net/tiny-game/js/${GITHUB_REF_NAME}.js \
+  --content-type text/javascript
