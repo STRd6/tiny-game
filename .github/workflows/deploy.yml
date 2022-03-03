@@ -25,4 +25,4 @@ jobs:
         yarn
         yarn build
     - name: Deploy to danielx.net/tiny-game/js/
-      run: ./script/deploy
+      run: bash ./script/deploy
