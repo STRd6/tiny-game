@@ -67,3 +67,20 @@ CoffeeScript IntelliSense
 ----
 
 https://marketplace.visualstudio.com/items?itemName=phil294.coffeesense
+
+GitHub Actions
+----
+
+https://docs.github.com/en/actions/quickstart
+
+### Environment Variables
+
+Make sure to name the environment in the .yml file that matches the environment
+set up when creating the secrets.
+
+```yaml
+  environment: deploy
+```
+
+https://bloggie.io/@_junrong/using-environment-variables-secrets-in-github-actions
+https://zellwk.com/blog/debug-github-actions-secret/

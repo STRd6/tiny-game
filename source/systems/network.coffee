@@ -206,8 +206,7 @@ module.exports = NetworkSystem = (game) ->
 
       client.on 'close', ->
         # console.log "Close", client
-        if hosting.connections
-          remove hosting.connections, client
+        remove hosting.connections, client
 
     game.hosting = hosting = {
       connections
