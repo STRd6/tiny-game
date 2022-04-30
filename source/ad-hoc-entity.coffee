@@ -20,7 +20,7 @@ AdHocEntity = (properties) ->
     $behaviorCount: U8
     # Reserve space for a uint16 array of behavior ids immediately after class byte, id int32, and behavior count uint8
     $behaviorIds: RESERVE(l * 2)
-    $byteLength: 
+    $byteLength:
       get: -> stateManager.size()
     $alloc:
       value: ->
@@ -36,7 +36,7 @@ AdHocEntity = (properties) ->
         {$data} = @
         # u8, i32, u8 = 6 bytes
         # TODO: This hardcoded offset is brittle
-        offset = 6 
+        offset = 6
         # Write id for each behavior
         i = 0
         while i < l

@@ -6,6 +6,8 @@
   "license": "SEE LICENSE IN 💖",
   "devDependencies": {
     "@danielx/coffeecoverage": "4.0.0-pre.1",
+    "@types/jsdom": "^16.2.14",
+    "@types/mocha": "^9.1.1",
     "browserify": "^17.0.0",
     "canvas": "^2.9.0",
     "coffeescript": "2.6.1",

@@ -34,6 +34,9 @@ https://coffeescript.org/annotated-source/coffeescript.html#section-38
 
 https://sokra.github.io/source-map-visualization/
 
+https://evanw.github.io/source-map-visualization/
+
+
 ### How to add them to CoffeeCoverage
 
 Essentially copy exactly how CoffeeScript does it down to using their same
