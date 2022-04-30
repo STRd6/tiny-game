@@ -39,6 +39,7 @@ module.exports = FXXPlayer = (fxxBuffer, context) ->
         buffer = fxxData.slice(p + 16, p + 116)
         # Add to sounds list
         sounds[name] ||= []
+        #@ts-ignore TODO global FXZ
         sounds[name].push FXZ buffer.buffer, context
         n += 1
 

@@ -237,6 +237,7 @@ module.exports = (options) ->
     entityMap: entityMap
 
     execProgram: ->
+      #@ts-ignore TODO global system
       system.pkg.exec(self.program)
 
     hardReset: ->
@@ -286,7 +287,7 @@ module.exports = (options) ->
 
     seed: 0
 
-    systems: null
+    systems: []
     system: null
 
     # Store textures by name and id for ease of use
@@ -297,17 +298,21 @@ module.exports = (options) ->
 
     update: ->
       {systems} = self
+      l = systems.length
 
       i = 0
-      while system = systems[i++]
+      while i < l
+        system = systems[i++]
         system.beforeUpdate?(self)
 
       i = 0
-      while system = systems[i++]
+      while i < l
+        system = systems[i++]
         system.update(self)
 
       i = 0
-      while system = systems[i++]
+      while i < l
+        system = systems[i++]
         system.afterUpdate?(self)
 
       self.tick++

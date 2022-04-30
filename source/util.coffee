@@ -2,7 +2,12 @@
 
 ## Util
 
+###*
 # Approach target by amount
+# @param x {number} Starting number
+# @param t {number} Target number
+# @param amount {number} Maximum amount
+###
 approach = (x, t, amount) ->
   if x > t
     max x - amount, t
@@ -11,6 +16,10 @@ approach = (x, t, amount) ->
   else
     t
 
+#
+###*
+@param arr {number[]} Array of numbers to average
+###
 average = (arr) ->
   if arr.length is 0
     return
@@ -21,6 +30,14 @@ average = (arr) ->
 
   sum / arr.length
 
+#
+###*
+Clamp a value to be between low and high.
+
+@param v {number}
+@param low {number}
+@param high {number}
+###
 clamp = (v, low, high) ->
   max min(v, high), low
 
@@ -41,6 +58,11 @@ mapBehaviors = (tags, table) ->
 
 noop = -> return
 
+#
+###*
+Get a random integer <= `n` or a random element from an array.
+@param n {number[] | number}
+###
 rand = (n) ->
   if Array.isArray n
     n[floor random() * n.length]
@@ -51,17 +73,31 @@ rand = (n) ->
 randId = ->
   (random() * pow(2, 53)).toString(36)
 
+#
+###*
+@template T
+@param array {T[]}
+@param item {T}
+###
 remove = (array, item) ->
   index = array.indexOf(item)
 
   if (index > -1)
-    array.splice(index, 1)[0]
+    return array.splice(index, 1)[0]
 
+  return undefined
+
+#
+###*
 # Returns an unsigned integer containing 31 reasonably-well-scrambled
 # bits, based on a given (signed) integer input parameter `n` and optional
 # `seed`.  Kind of like looking up a value in a non-existent table of 2^31
 # previously generated random numbers.
 # https://www.youtube.com/watch?v=LWFzPP8ZbdU
+#
+# @param n {number}
+# @param seed {number}
+###
 squirrel3 = (n, seed=0) ->
     n *= 0xb5297a4d
     n += seed
@@ -105,6 +141,10 @@ xorshift32 = (state) ->
 
 # Store controller snapshots as byte arrays so they can travel the network
 
+#
+###*
+@param f {number}
+###
 floatToUint8 = (f) ->
   if f < 0
     v = (f * 128)|0
@@ -115,6 +155,10 @@ floatToUint8 = (f) ->
 
   v + 128
 
+#
+###*
+@param n {number}
+###
 uint8ToFloat = (n) ->
   v = n - 128
   if v < 0
@@ -124,7 +168,11 @@ uint8ToFloat = (n) ->
   else
     0
 
-# 0 zero 1-8 negative axis -0.125 - -1.0, 9-15 positive axis 0.25-1.0
+#
+###*
+0 zero 1-8 negative axis -0.125 - -1.0, 9-15 positive axis 0.25-1.0
+@param f {number}
+###
 axisToNibble = (f) ->
   # This could be < 0 instead of <= -0.25. The purpose is to discard jittery
   # values near 0 for better input compression options.
@@ -137,6 +185,10 @@ axisToNibble = (f) ->
 
   v & 0xf
 
+#
+###*
+@param n {number}
+###
 nibbleToAxis = (n)  ->
   v = (n & 0xf)
 
@@ -147,178 +199,24 @@ nibbleToAxis = (n)  ->
   else
     (v - 7) / 8
 
+#
+###*
+@param v {number}
+###
 triggerToNibble = (v) ->
   if v > 0
     (v * 16 - 1) & 0xf
   else
     0
 
-# Convert a number to hex padding up to length with leading zeroes
+#
+###*
+Convert a number to hex padding up to length with leading zeroes
+@param n {number}
+@param length {number}
+###
 toHex = (n, length=2) ->
   n.toString(16).padStart(length, "0")
-
-###
-DataStream
-
-Read or write bytes to a DataView, auto-advancing the position.
-
-DataView methods but with get/put instead of get/set.
-###
-
-DataStream = (buffer) ->
-  @byteLength = buffer.byteLength
-  @byteView = new Uint8Array buffer
-  @view = new DataView buffer
-  @position = 0
-
-[8, 16, 32].forEach (size) ->
-  bytes = size / 8
-
-  ["getUint", "getInt"].forEach (type) ->
-    fn = type + size
-    DataStream::[fn] = (littleEndian) ->
-      v = @view[fn](@position, littleEndian)
-      @position += bytes
-      return v
-
-  ["setUint", "setInt"].forEach (type) ->
-    fn = type + size
-    DataStream::[fn.replace(/^se/, "pu")] = (v, littleEndian) ->
-      @view[fn](@position, v, littleEndian)
-      @position += bytes
-      return
-
-[32, 64].forEach (size) ->
-  bytes = size / 8
-  do ->
-    fn = "getFloat" + size
-
-    DataStream::[fn] = (littleEndian) ->
-      v = @view[fn](@position, littleEndian)
-      @position += bytes
-      return v
-
-  do ->
-    fn = "setFloat" + size
-
-    DataStream::[fn.replace(/^se/, "pu")] = (v, littleEndian) ->
-      @view[fn](@position, v, littleEndian)
-      @position += bytes
-      return
-
-do ->
-  {MAX_SAFE_INTEGER} = Number
-
-  # ascii is a subset of utf-8
-  utf8Decoder = new TextDecoder 'utf-8'
-
-  Object.assign DataStream::,
-    # Subarray of bytes to send over the network
-    # Classic pattern is to call reset, write out the data, then pass the result
-    # of `bytes` directly to the socket.
-    bytes: ->
-      return @byteView.subarray 0, @position
-
-    done: ->
-      @position >= @byteLength
-
-    reset: ->
-      @position = 0
-
-    getAscii: (length) ->
-      utf8Decoder.decode @getBytes(length)
-
-    putAscii: (str) ->
-      bytes = new Uint8Array str.length
-
-      str.split('').forEach (c, i) ->
-        code = c.charCodeAt(0)
-
-        if code >= 0x80
-          throw new Error "Character out of range in '#{str}', index: #{i} char: #{c} (#{code} > #{0x80})"
-
-        bytes[i] = code
-
-      @putBytes bytes
-
-    getBytes: (length) ->
-      p = @position
-      result = @byteView.subarray p, p + length
-      @position += length
-
-      return result
-
-    putBytes: (bytes) ->
-      @byteView.set(bytes, @position)
-      @position += bytes.length
-
-      return
-
-    ###
-    read a MIDI-style variable-length unsigned integer
-    (big-endian value in groups of 7 bits,
-    with top bit set to signify that another byte follows)
-    ###
-    getVarUint: ->
-      result = 0
-      loop
-        b = @getUint8()
-        if b & 0x80
-          result += (b & 0x7f)
-          result *= 0x80
-        else
-          return result + b
-
-    putVarUint: (v) ->
-      if v > MAX_SAFE_INTEGER
-        throw new Error "Number out of range: #{v} > #{MAX_SAFE_INTEGER}"
-
-      b = 0x2000000000000 # 2^49
-
-      while b > 1
-        if v >= b
-          @putUint8( (v / b) | 0x80 )
-        b /= 0x80
-
-      @putUint8(v & 0x7f)
-
-###
-Enum
-
-Experimental enum helper
-###
-createEnum = (values) ->
-  Enum = (name, value) ->
-    @name = name
-    @value = value
-
-    # Add integer and string keys to constructor object
-    Enum[name] = @
-    Enum[value] = @
-
-    return
-
-  Object.assign Enum::,
-    toJSON: ->
-      @name
-    toString: ->
-      @name
-    valueOf: ->
-      @value
-
-  Enum.propertyFor = (key) ->
-    get: ->
-      Enum[@[key]]
-    set: (v) ->
-      @[key] = Enum[v]
-
-  if typeof values is "string"
-    values = values.split(/\s+/)
-
-  values.forEach (name, value) ->
-    new Enum(name, value)
-
-  return Enum
 
 ###
 DataType manages bit and byte access for entity properties. bind is called in
@@ -338,7 +236,7 @@ DataType =
       get: ->
         (@$data.getUint8(offset) & (1 << bit)) >> bit
       set: (v) ->
-        @$data.setUint8 offset, @$data.getUint8(offset) & (~(1 << bit)) | (!!v << bit)
+        @$data.setUint8 offset, @$data.getUint8(offset) & (~(1 << bit)) | ((1 & v) << bit)
 
   # -1 or 1
   UNIT:
@@ -352,7 +250,7 @@ DataType =
         (((@$data.getUint8(offset) & (1 << bit)) >> bit) - 0.5) * 2
       set: (v) ->
         v = (v / 2) + 0.5
-        @$data.setUint8 offset, @$data.getUint8(offset) & (~(1 << bit)) | (!!v << bit)
+        @$data.setUint8 offset, @$data.getUint8(offset) & (~(1 << bit)) | ((1 & v) << bit)
 
   # 0-0xff (0-255)
   U8:
@@ -523,14 +421,14 @@ StateManager = ->
     size
 
 module.exports = {
-  DataStream
+  DataStream: require "./data-stream"
   DataType
   StateManager
   approach
   average
   axisToNibble
   clamp
-  createEnum
+  createEnum: require "./enum"
   floatToUint8
   mapBehaviors
   nibbleToAxis
@@ -543,6 +441,6 @@ module.exports = {
   toHex
   triggerToNibble
   uint8ToFloat
-  xorshift32
   wrap
+  xorshift32
 }

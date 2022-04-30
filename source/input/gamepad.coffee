@@ -31,5 +31,10 @@ Object.defineProperties Gamepad::,
     """
 
 Object.assign Gamepad::,
+  ###*
+  @this {Gamepad}
+  ###
   vibrate: ->
     @vibrationActuator.playEffect "dual-rumble", arguments...
+
+module.exports = {}

@@ -17,6 +17,8 @@
     "nyc": "^15.1.0",
     "pixi.js": "^6.2.2",
     "pixi.js-legacy": "^6.2.2",
+    "typedoc": "^0.22.15",
+    "typescript": "^4.6.4",
     "wrtc": "^0.4.7"
   },
   "mocha": {
@@ -52,7 +54,8 @@
   },
   "scripts": {
     "build": "bash script/prepublish && bash script/browser",
+    "doc": "coffee --bare --compile source && ./node_modules/.bin/typedoc source/index.js",
     "prepublish": "bash script/prepublish",
-    "test": "nyc mocha"
+    "test": "find source -type f -name '*.js' -print -delete && nyc mocha"
   }
 }

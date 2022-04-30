@@ -2,6 +2,7 @@
 
 {min} = Math
 
+#@ts-ignore TODO global PIXI
 {
   BitmapText
   Container

@@ -33,6 +33,7 @@ AdHocEntity = (properties) ->
         # Store behavior count uint8
         @$behaviorCount = l
 
+        #@ts-ignore TODO this is needed when building the docs since it doesn't use exactly the same transformations that CoffeeSense uses
         {$data} = @
         # u8, i32, u8 = 6 bytes
         # TODO: This hardcoded offset is brittle
@@ -57,6 +58,7 @@ AdHocEntity = (properties) ->
     stateManager.bindProps(combinedProperties)
 
 # Construct from a backing buffer using the same memory reference
+#@ts-ignore TODO this is needed when building the docs since it doesn't use exactly the same transformations that CoffeeSense uses
 AdHocEntity.fromBuffer = (game, buffer, offset) ->
   data = new DataView buffer, offset
   $class = data.getUint8(0)
@@ -77,6 +79,7 @@ AdHocEntity.fromBuffer = (game, buffer, offset) ->
     i++
 
   e = AdHocEntity({behaviors})
+  #@ts-ignore TODO
   e.$data = new DataView buffer, offset, e.$byteLength
 
   return e

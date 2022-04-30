@@ -1,3 +1,5 @@
+#@ts-nocheck
+
 {max} = Math
 
 {SIZE} = InputSnapshot = require "./snapshot"

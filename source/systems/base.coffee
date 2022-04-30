@@ -154,8 +154,10 @@ module.exports = (game) ->
 
       return assign e, defaults, properties
 
+    #@ts-ignore TODO
     Constructor.byteLength = stateManager.size()
     # Construct from a backing buffer using the same memory reference
+    #@ts-ignore TODO
     Constructor.fromBuffer = (game, buffer, offset) ->
       e = Constructor()
       e.$data = new DataView buffer, offset, stateManager.size()

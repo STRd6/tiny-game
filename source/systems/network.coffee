@@ -138,6 +138,7 @@ module.exports = NetworkSystem = (game) ->
 
       return client
 
+    #@ts-ignore TODO global peerjs
     peer = new peerjs.Peer(game.localId)
 
     peer.on 'error', console.error
@@ -228,6 +229,7 @@ module.exports = NetworkSystem = (game) ->
       tick: -1
 
     id = game.localId
+    #@ts-ignore TODO global peerjs
     peer = new peerjs.Peer(id)
 
     stats =

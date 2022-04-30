@@ -13,9 +13,12 @@ module.exports = DisplaySystem = (game) ->
   cameras = []
   huds = {}
 
+  #@ts-ignore TODO global PIXI
   Object.assign PIXI.settings,
+    #@ts-ignore TODO global PIXI
     SCALE_MODE: PIXI.SCALE_MODES.NEAREST
 
+  #@ts-ignore TODO global PIXI
   app = new PIXI.Application
     width: screenWidth
     height: screenHeight
