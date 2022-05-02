@@ -1,4 +1,4 @@
-{PI, abs, atan2, ceil, cos, floor, max, min, pow, random, sin, sign} = Math
+{floor, max, min, pow, random} = Math
 
 ## Util
 
@@ -218,10 +218,13 @@ Convert a number to hex padding up to length with leading zeroes
 toHex = (n, length=2) ->
   n.toString(16).padStart(length, "0")
 
-###
+#
+###*
 DataType manages bit and byte access for entity properties. bind is called in
 the context of the state manager. The property methods execute in the context
 of the entity object. Don't let the different `this` scopes fool you.
+
+@type {import("../types/types").PropertyDefinitions}
 ###
 
 DataType =
@@ -365,11 +368,11 @@ DataType =
   RESERVE: (length) ->
     bytes: length
     bind: ->
-      offset = @reserveBytes(length)
+      @reserveBytes(length)
 
       get: ->
 
-###
+###*
 Map state into bits and bytes. Make every byte count for the network!
 
 Tracks offsets and total size, reserves bits and bytes using DataType
@@ -380,45 +383,48 @@ StateManager = ->
   availableBits = 0
   lastBitOffset = null
 
-  alloc: ->
-    new DataView new ArrayBuffer size
+  #
+  ###* @type {import("../types/types").StateManagerInstance} ###
+  self =
+    alloc: ->
+      new DataView new ArrayBuffer size
 
-  bindProps: (properties) ->
-    keys = Object.keys(properties)
-    i = 0
-    o = {}
-    while key = keys[i++]
-      {bind} = definition = properties[key]
+    bindProps: (properties) ->
+      o = {}
+      Object.entries(properties).forEach ([key, definition]) ->
+        {bind} = definition
 
-      if typeof bind is 'function'
-        o[key] = bind.call @
+        if typeof bind is 'function'
+          o[key] = bind.call @
+        else
+          o[key] = definition
+
+      return o
+
+    reserveBits: (n) ->
+      if availableBits >= n
+        offset = lastBitOffset
       else
-        o[key] = definition
+        offset = lastBitOffset = size
+        availableBits = 8
+        size += 1
 
-    return o
+      bit = 8 - availableBits
+      availableBits -= n
 
-  reserveBits: (n) ->
-    if availableBits >= n
-      offset = lastBitOffset
-    else
-      offset = lastBitOffset = size
-      availableBits = 8
-      size += 1
+      offset: offset
+      bit: bit
 
-    bit = 8 - availableBits
-    availableBits -= n
+    reserveBytes: (n) ->
+      offset = size
+      size += n
 
-    offset: offset
-    bit: bit
+      return offset
 
-  reserveBytes: (n) ->
-    offset = size
-    size += n
+    size: ->
+      size
 
-    return offset
-
-  size: ->
-    size
+  return self
 
 module.exports = {
   DataStream: require "./data-stream"

@@ -3,4 +3,3 @@ coverage/
 dist/
 docs/
 node_modules/
-source/**/*.js

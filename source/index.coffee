@@ -8,9 +8,7 @@ CustomTicker = require "./custom-ticker"
 FXXPlayer = require "./fxx-player"
 
 {
-  DataType
   DataStream
-  StateManager
   mapBehaviors
   rand
   randId
@@ -24,7 +22,7 @@ InputSystem = require "./systems/input"
 NetworkSystem = require "./systems/network"
 SoundSystem = require "./systems/sound"
 
-module.exports = (options) ->
+TinyGame = (options) ->
   # Need to start above zero so we can use negatives to represent client
   # predicted objects
   nextID = 1
@@ -32,6 +30,8 @@ module.exports = (options) ->
   # Map from ID -> entity data for each active entity
   entityMap = new Map
 
+  #
+  ###* @type {import("../types/types").GameInstance}###
   self =
     pendingEntities: []
     # Creates and adds an entity to the pending entities list,
@@ -139,8 +139,11 @@ module.exports = (options) ->
       dataStream.putUint32 self.tick
 
       # write entities
+      l = es.length
       i = 0
-      while e = es[i++]
+      while i < l
+        e = es[i++]
+        assert e
         {buffer:b, byteOffset, byteLength} = e.$data
         dataStream.putBytes new Uint8Array(b, byteOffset, byteLength)
 
@@ -249,15 +252,19 @@ module.exports = (options) ->
 
     # Reload game state from a json object or from the existing state
     reload: (data) ->
-      data ?= JSON.parse self.data()
+      ###* @type {import("../types/types").GameState} ###
+      state = data or JSON.parse self.data()
 
       {createEntity} = self
-      {entities, seed, tick} = data
+      {entities, seed, tick} = state
 
       toDestroy = new Set entityMap.keys()
 
       i = 0
-      while e = entities[i++]
+      l = entities.length
+      while i < l
+        e = entities[i++]
+        assert e
         {ID} = e
         toDestroy.delete ID
 
@@ -288,7 +295,7 @@ module.exports = (options) ->
     seed: 0
 
     systems: []
-    system: null
+    system: {}
 
     # Store textures by name and id for ease of use
     textures: []
@@ -303,18 +310,22 @@ module.exports = (options) ->
       i = 0
       while i < l
         system = systems[i++]
+        assert system
         system.beforeUpdate?(self)
 
       i = 0
       while i < l
         system = systems[i++]
+        assert system
         system.update(self)
 
       i = 0
       while i < l
         system = systems[i++]
+        assert system
         system.afterUpdate?(self)
 
+      #@ts-ignore TODO: How to handle subtypes of number in TS?
       self.tick++
 
       return self.tick
@@ -338,9 +349,11 @@ module.exports = (options) ->
 
   return self
 
-Object.assign module.exports, {
+Object.assign TinyGame, {
   CustomTicker
   FXXPlayer
   ui
   util
 }
+
+module.exports = TinyGame

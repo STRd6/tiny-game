@@ -6,6 +6,7 @@
   "license": "SEE LICENSE IN 💖",
   "devDependencies": {
     "@danielx/coffeecoverage": "4.0.0-pre.1",
+    "@types/coffeescript": "^2.5.1",
     "@types/jsdom": "^16.2.14",
     "@types/mocha": "^9.1.1",
     "browserify": "^17.0.0",
@@ -54,8 +55,8 @@
   },
   "scripts": {
     "build": "bash script/prepublish && bash script/browser",
-    "doc": "coffee --bare --compile source && ./node_modules/.bin/typedoc source/index.js",
+    "doc": "typedoc types/types.d.ts",
     "prepublish": "bash script/prepublish",
-    "test": "find source -type f -name '*.js' -print -delete && nyc mocha"
+    "test": "nyc mocha"
   }
 }
