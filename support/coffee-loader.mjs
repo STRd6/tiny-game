@@ -1,3 +1,4 @@
+//@ts-nocheck TODO
 import { pathToFileURL } from 'url';
 import { readFileSync } from 'fs';
 import CoffeeScript from "coffeescript"

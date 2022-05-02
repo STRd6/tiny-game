@@ -391,11 +391,12 @@ StateManager = ->
 
     bindProps: (properties) ->
       o = {}
+      context = this
       Object.entries(properties).forEach ([key, definition]) ->
         {bind} = definition
 
         if typeof bind is 'function'
-          o[key] = bind.call @
+          o[key] = bind.call context
         else
           o[key] = definition
 

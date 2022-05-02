@@ -1,5 +1,5 @@
 interface VibrationActuator {
-  playEffect(effect: string, ...args: any[])
+  playEffect(effect: string, ...args: any[]): unknown
 }
 
 interface Gamepad {
