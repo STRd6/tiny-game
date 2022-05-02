@@ -224,7 +224,7 @@ DataType manages bit and byte access for entity properties. bind is called in
 the context of the state manager. The property methods execute in the context
 of the entity object. Don't let the different `this` scopes fool you.
 
-@type {import("../types/types").PropertyDefinitions}
+@type {DataTypeDefinitions}
 ###
 
 DataType =
@@ -381,21 +381,21 @@ definitions.
 StateManager = ->
   size = 0
   availableBits = 0
-  lastBitOffset = null
+  lastBitOffset = 0
 
   #
-  ###* @type {import("../types/types").StateManagerInstance} ###
+  ###* @type {StateManagerInstance} ###
   self =
     alloc: ->
       new DataView new ArrayBuffer size
 
     bindProps: (properties) ->
+      ###* @type {{[key: string]: PropertyDescriptor}} ###
       o = {}
       context = this
       Object.entries(properties).forEach ([key, definition]) ->
-        {bind} = definition
-
-        if typeof bind is 'function'
+        if "bind" of definition
+          {bind} = definition
           o[key] = bind.call context
         else
           o[key] = definition
@@ -451,3 +451,10 @@ module.exports = {
   wrap
   xorshift32
 }
+
+#
+###*
+@typedef {import("../types/types").DataTypeDefinitions} DataTypeDefinitions
+@typedef {import("../types/types").StateManagerInstance} StateManagerInstance
+@typedef {import("../types/types").PropertyDefinition} PropertyDefinition
+###

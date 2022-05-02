@@ -135,13 +135,17 @@ export interface BoundDescriptor<T> extends PropertyDescriptor {
   set?(this: T, v: any): any
 }
 
-export interface PropertyDefinition {
+export type PropertyDefinition = {
   bytes: number
   bits?: number
-  bind?: (this: StateManagerInstance) => BoundDescriptor<Entity>
-}
+  bind: (this: StateManagerInstance) => BoundDescriptor<Entity>
+} | BoundDescriptor<Entity>
 
 export interface PropertyDefinitions {
+  [key: string]: PropertyDefinition
+}
+
+export interface DataTypeDefinitions {
   [key: string]: PropertyDefinition | ((...args: any[]) => PropertyDefinition)
 }
 
