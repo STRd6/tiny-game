@@ -41,12 +41,15 @@ Clamp a value to be between low and high.
 clamp = (v, low, high) ->
   max min(v, high), low
 
+#
+###* @type {mapBehaviors} ###
 mapBehaviors = (tags, table) ->
   result = []
   i = 0
   l = tags.length
   while i < l
     tag = tags[i++]
+    assert tag
     behavior = table[tag]
     if !behavior
       console.warn "Couldn't find behavior #{JSON.stringify(tag)}"
@@ -61,7 +64,8 @@ noop = -> return
 #
 ###*
 Get a random integer <= `n` or a random element from an array.
-@param n {number[] | number}
+@template T
+@type {rand<T>}
 ###
 rand = (n) ->
   if Array.isArray n
@@ -110,6 +114,8 @@ squirrel3 = (n, seed=0) ->
     return n
 
 # Override default stop callback behavior
+###* @type {stopKeyboardHandler} ###
+#@ts-ignore e is intentionally unused
 stopKeyboardHandler = (e, element, combo) ->
   # Don't stop for ctrl+key etc. even in textareas
   if combo.match /^(ctrl|alt|meta|option|command)\+/
@@ -119,8 +125,13 @@ stopKeyboardHandler = (e, element, combo) ->
   return element.tagName == 'INPUT' ||
     element.tagName == 'SELECT' ||
     element.tagName == 'TEXTAREA' ||
-    (element.contentEditable && element.contentEditable == 'true')
+    (!!element.contentEditable && element.contentEditable == 'true')
 
+#
+###*
+@template T
+@type {wrap<T>}
+###
 wrap = (array, index) ->
   {length} = array
   index = floor(index) % length
@@ -129,6 +140,8 @@ wrap = (array, index) ->
 
   return array[index]
 
+#
+###* @type {xorshift32} ###
 xorshift32 = (state) ->
 	x = state.seed
 	x ^= x << 13
@@ -457,4 +470,21 @@ module.exports = {
 @typedef {import("../types/types").DataTypeDefinitions} DataTypeDefinitions
 @typedef {import("../types/types").StateManagerInstance} StateManagerInstance
 @typedef {import("../types/types").PropertyDefinition} PropertyDefinition
+
+@typedef {import("../types/types").mapBehaviors} mapBehaviors
+@typedef {import("../types/types").stopKeyboardHandler} stopKeyboardHandler
+
+@typedef {import("../types/types").xorshift32} xorshift32
+###
+
+#
+###*
+@template T
+@typedef {import("../types/types").wrap<T>} wrap
+###
+
+#
+###*
+@template T
+@typedef {import("../types/types").rand<T>} rand
 ###

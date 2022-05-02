@@ -159,3 +159,48 @@ export interface StateManagerInstance {
   reserveBytes(n: number): number
   size(): number
 }
+
+// Enum TODO: TypeScript has real trouble indexing classes
+
+interface EnumInstance extends EnumPrototype {
+
+}
+
+interface EnumPrototype {
+  toJSON(): string
+  toString(): string
+  valueOf(): number
+}
+
+interface EnumConstructor {
+  new(name: string, value: number): EnumInstance
+  prototype: EnumPrototype
+  propertyFor(key: string): PropertyDescriptor
+}
+
+interface createEnum {
+  (values: string | string[]): EnumConstructor
+}
+
+// Util
+
+export interface mapBehaviors {
+  (tags: string[], table: Behaviors): Behavior[]
+}
+
+export interface rand<T> {
+  (n: number): number
+  (n: T[]): T
+}
+
+export interface stopKeyboardHandler {
+  (e: KeyboardEvent, element: HTMLElement, combo: string): boolean
+}
+
+export interface wrap<T> {
+  (array: T[], index: number): T | undefined
+}
+
+export interface xorshift32 {
+  (state: { seed: number }): number
+}

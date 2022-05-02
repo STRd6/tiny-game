@@ -84,7 +84,7 @@ describe "Util", ->
     assert.equal squirrel3(0), 0x1a0a9606
 
   it "stopKeyboardHandler", ->
-    e = {}
+    e = new window.KeyboardEvent("keydown")
     element =
       tagName: "INPUT"
     combo = "ctrl+s"
