@@ -44,8 +44,8 @@ export interface DataStream extends DataStreamProto {
 }
 
 export interface EntitySource {
-  ID?: I32
-  behaviors?: unknown
+  ID: I32
+  behaviors: string[]
   $class?: U8
 }
 
@@ -158,6 +158,22 @@ export interface StateManagerInstance {
   }
   reserveBytes(n: number): number
   size(): number
+}
+
+export interface BufferedControllerInstance { }
+
+export interface BufferedController {
+  new(id: U8, clientId: U8, description: string, startTick: number, bufferSize: number): BufferedControllerInstance
+  prototype: BufferedControllerInstance
+  defaultBufferSize: number
+}
+
+export interface CustomTickerInstance {
+  destroy(): void
+}
+
+export interface CustomTicker {
+  (fps: number, fn: () => void, performance?: { now(): DOMHighResTimeStamp }): CustomTickerInstance
 }
 
 // Enum TODO: TypeScript has real trouble indexing classes

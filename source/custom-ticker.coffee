@@ -1,7 +1,8 @@
-module.exports = CustomTicker = (fps=60, fn, performance=window.performance) ->
+###* @type {import("../types/types").CustomTicker} ###
+CustomTicker = (fps=60, fn, performance=window.performance) ->
   {cancelAnimationFrame, requestAnimationFrame} = window
-  stopped = false
 
+  _raf = 0
   accum = 0
   now = performance.now()
   accumulate = ->
@@ -26,7 +27,6 @@ module.exports = CustomTicker = (fps=60, fn, performance=window.performance) ->
   , 1
 
   step = ->
-    return if stopped
     _raf = requestAnimationFrame step
     accumulate()
     process()
@@ -34,6 +34,7 @@ module.exports = CustomTicker = (fps=60, fn, performance=window.performance) ->
   _raf = requestAnimationFrame step
 
   destroy: ->
-    stopped = true
     clearInterval _i
     cancelAnimationFrame _raf
+
+module.exports = CustomTicker
