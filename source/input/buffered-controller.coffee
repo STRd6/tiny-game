@@ -1,9 +1,13 @@
 {max} = Math
 
-{SIZE} = InputSnapshot = require "./snapshot"
+InputSnapshot = require "./snapshot"
+{SIZE} = InputSnapshot
 
-# cid is string source id
-# byteId is network identifier
+#
+###*
+@type {import("../../types/types").BufferedControllerConstructor}
+###
+#@ts-ignore
 BufferedController = (id, clientId, description, startTick=-1, bufferSize=BufferedController.defaultBufferSize) ->
   # Input starts with a blank input at tick -1 so `prev` is valid for frame 0
   # ~1MB = 1 hour of input frames
@@ -20,8 +24,10 @@ BufferedController = (id, clientId, description, startTick=-1, bufferSize=Buffer
   @prev = new InputSnapshot @data
   @_update()
 
-  @pressed = pressed = Object.create @
-  @released = released = Object.create @
+  pressed = Object.create @
+  @pressed = pressed
+  released = Object.create @
+  @released = released
 
   BufferedController.BUTTONS.forEach (b) ->
     Object.defineProperty pressed, b,
@@ -36,10 +42,12 @@ Object.assign BufferedController,
   BUTTONS: "a b x y lb rb lt rt back start ls rs up down left right home".split " "
   defaultBufferSize: 60 * 60 * 60 # 1 hour of input snapshots
 
-Object.assign BufferedController::,
+instanceMethods =
+  ###* @type {BufferedController["toString"]} ###
   toString: ->
     "#{@clientId}:#{@id} #{@description}"
-  # Updates current and prev snapshot pointers
+
+  ###* @type {BufferedController["_update"]} ###
   _update: ->
     t = @tick - @startTick
     @current.data = @data.subarray(t * SIZE, (t+1) * SIZE)
@@ -47,7 +55,7 @@ Object.assign BufferedController::,
 
     return
 
-  # Update `current` and `prev` pointers to match the given tick.
+  ###* @type {BufferedController["at"]} ###
   at: (tick) ->
     if @network and tick > @latestData
       console.warn "T:#{tick} > latest buffered data tick #{@latestData}"
@@ -59,13 +67,12 @@ Object.assign BufferedController::,
 
     return @
 
+  ###* @type {BufferedController["dataAt"]} ###
   dataAt: (tick) ->
     t = tick - @startTick
     @data.subarray(t * SIZE, (t+1) * SIZE)
 
-  # c.recent(1).data == c.current.data
-  # returns a subarray of the buffered data with the last entry for the current
-  # tick
+  ###* @type {BufferedController["recent"]} ###
   recent: (n=15) ->
     t = @tick - @startTick
 
@@ -76,13 +83,14 @@ Object.assign BufferedController::,
 
     @data.subarray(s * SIZE, (t+1) * SIZE)
 
-  # reset controller data to be empty starting at the tick before this one
+  ###* @type {BufferedController["reset"]} ###
   reset: (tick) ->
     @startTick = tick-1
     @tick = tick
     @data.fill 0
+    return
 
-  # Set the latest snapshot and update the current tick
+  ###* @type {BufferedController["set"]} ###
   set: (tick, data) ->
     n = tick - @latestData
     # There is a gap in our buffer but if it's too far back don't fill in
@@ -109,9 +117,7 @@ Object.assign BufferedController::,
 
     return
 
-  # Tick is the current game tick that we are setting input for
-  # we don't want to change anything in the past before that but we do want to
-  # fill up as much input into the future as we have.
+  ###* @type {BufferedController["bufferFromNetwork"]} ###
   bufferFromNetwork: (tick, input) ->
     {data} = input
 
@@ -135,6 +141,8 @@ Object.assign BufferedController::,
     @latestData = input.tick
 
     return
+
+Object.assign BufferedController::, instanceMethods
 
 Object.defineProperties BufferedController::,
   key: get: ->
@@ -160,3 +168,8 @@ Object.defineProperties BufferedController::,
   home: get: -> @current.home
 
 module.exports = BufferedController
+
+#
+###*
+@typedef {import("../../types/types").BufferedController} BufferedController
+###

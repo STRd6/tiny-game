@@ -1,13 +1,20 @@
 {triggerToNibble, axisToNibble, nibbleToAxis} = require "../util"
 
 # 5 bytes of data to represent the controller. Can be a slice of a byte array
+###*
+@type {import("../../types/types").InputSnapshotConstructor}
+###
+#@ts-ignore
 InputSnapshot = (bytes) ->
   this.data = bytes
-  return
+  return this
 
 Object.assign InputSnapshot,
   SIZE: 5 # size in bytes
   NULL: new Uint8Array 5
+  ###*
+  @param controller {Controller}
+  ###
   bytesFrom: (controller) ->
     data = new Uint8Array(InputSnapshot.SIZE)
 
@@ -27,6 +34,9 @@ Object.assign InputSnapshot,
 
     return data
 
+  ###*
+  @param controller {Controller}
+  ###
   from: (controller) ->
     new InputSnapshot InputSnapshot.bytesFrom(controller)
 
@@ -67,3 +77,8 @@ Object.defineProperties InputSnapshot::,
     ]
 
 module.exports = InputSnapshot
+
+#
+###*
+@typedef {import("../../types/types").Controller} Controller
+###
