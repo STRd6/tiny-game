@@ -6,8 +6,13 @@ export interface I8 extends I16 { }
 export interface I16 extends I32 { }
 export interface I32 extends Number { }
 
-export interface AdHocEntityInstance {
+export interface AdHocEntity extends Entity { }
 
+export interface AdHocEntityConstructor {
+  (properties: { behaviors: Behavior[] }): AdHocEntity
+
+  /** Construct from a backing buffer using the same memory reference */
+  fromBuffer(game: GameInstance, buffer: ArrayBufferLike, offest: number): AdHocEntity
 }
 
 export interface DataStreamConstructor {
@@ -46,17 +51,28 @@ export interface DataStream extends DataStreamProto {
 
 export interface EntitySource {
   ID: I32
-  behaviors: string[]
-  $class?: U8
+  behaviors: Behavior[]
+  $class: U8
 }
 
 export interface Entity {
   ID: I32
+  $class: U8
+  $behaviorCount: U8
+  $byteLength: number
   $data: DataView
   info(): string
 }
 
-export interface Behavior { }
+export interface Behavior {
+  _id: number
+  _tag: string
+  properties: {
+    [key: string]: PropertyDefinition
+  }
+  toString(): string
+  toJSON(): string
+}
 
 export interface Behaviors {
   [key: string]: Behavior
@@ -83,6 +99,7 @@ export interface GameInstance extends NetworkInstance {
   pendingEntities: Entity[]
   seed: U32
   system: {
+    base: BaseSystem
     [key: string]: System
   }
   systems: System[]
@@ -123,6 +140,10 @@ export interface System {
   destroy(self: GameInstance): void
 }
 
+export interface BaseSystem extends System {
+  getBehaviorById(id: number): Behavior
+}
+
 export interface NetworkInstance {
   hosting: boolean
 }
@@ -134,6 +155,7 @@ export interface TinyGame {
 export interface BoundDescriptor<T> extends PropertyDescriptor {
   get?(this: T): any
   set?(this: T, v: any): any
+  value?: (this: T) => any
 }
 
 export type PropertyDefinition = {
@@ -147,10 +169,30 @@ export interface PropertyDefinitions {
 }
 
 export interface DataTypeDefinitions {
-  [key: string]: PropertyDefinition | ((...args: any[]) => PropertyDefinition)
+  BIT: PropertyDefinition
+  I8: PropertyDefinition
+  I16: PropertyDefinition
+  I32: PropertyDefinition
+  UNIT: PropertyDefinition
+  U8: PropertyDefinition
+  U16: PropertyDefinition
+  U32: PropertyDefinition
+  /** ! DANGER: this writes in little endian format (actually machine specific)
+  whereas DataView writes in big endian by default.
+  TODO: is there a good way to return an array-like that is efficient and
+  works well? */
+  U16A: (length: number) => PropertyDefinition
+  FIXED16: (precision: number) => PropertyDefinition
+  FIXED32: (precision: number) => PropertyDefinition
+  /** Reserve a fixed number of bytes */
+  RESERVE: (length: number) => PropertyDefinition
 }
 
 export interface StateManagerInstance {
+  _size: number
+  _availableBits: number
+  _lastBitOffset: number
+
   alloc(): DataView
   bindProps(properties: PropertyDefinitions): Object
   reserveBits(n: number): {
@@ -159,6 +201,16 @@ export interface StateManagerInstance {
   }
   reserveBytes(n: number): number
   size(): number
+}
+
+/**
+Map state into bits and bytes. Make every byte count for the network!
+
+Tracks offsets and total size, reserves bits and bytes using DataType definitions.
+*/
+export interface StateManager {
+  new(): StateManagerInstance
+  (this: StateManagerInstance): StateManagerInstance
 }
 
 export interface ButtonValues {

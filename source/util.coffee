@@ -302,10 +302,6 @@ DataType =
       set: (v) ->
         @$data.setUint32(offset, clamp v, 0, 0xffffffff)
 
-  # ! DANGER: this writes in little endian format (actually machine specific)
-  # whereas DataView writes in big endian by default.
-  # TODO: is there a good way to return an array-like that is efficient and
-  # works well?
   U16A: (size) ->
     bytes: 2 * size
     bind: ->
@@ -377,7 +373,6 @@ DataType =
       set: (v) ->
         @$data.setInt32(offset, clamp v, -0x80000000, 0x7FFFFFFF)
 
-  # Reserve a fixed number of bytes
   RESERVE: (length) ->
     bytes: length
     bind: ->
@@ -385,60 +380,59 @@ DataType =
 
       get: ->
 
-###*
-Map state into bits and bytes. Make every byte count for the network!
-
-Tracks offsets and total size, reserves bits and bytes using DataType
-definitions.
-###
+#
+###* @type {StateManager} ###
+#@ts-ignore
 StateManager = ->
-  size = 0
-  availableBits = 0
-  lastBitOffset = 0
+  @_size = 0
+  @_availableBits = 0
+  @_lastBitOffset = 0
+  return
 
-  #
-  ###* @type {StateManagerInstance} ###
-  self =
-    alloc: ->
-      new DataView new ArrayBuffer size
+#
+###* @type {StateManagerInstance} ###
+#@ts-ignore
+stateManageInstanceMethods =
+  alloc: ->
+    new DataView new ArrayBuffer @_size
 
-    bindProps: (properties) ->
-      ###* @type {{[key: string]: PropertyDescriptor}} ###
-      o = {}
-      context = this
-      Object.entries(properties).forEach ([key, definition]) ->
-        if "bind" of definition
-          {bind} = definition
-          o[key] = bind.call context
-        else
-          o[key] = definition
-
-      return o
-
-    reserveBits: (n) ->
-      if availableBits >= n
-        offset = lastBitOffset
+  bindProps: (properties) ->
+    ###* @type {{[key: string]: PropertyDescriptor}} ###
+    o = {}
+    context = this
+    Object.entries(properties).forEach ([key, definition]) ->
+      if "bind" of definition
+        {bind} = definition
+        o[key] = bind.call context
       else
-        offset = lastBitOffset = size
-        availableBits = 8
-        size += 1
+        o[key] = definition
 
-      bit = 8 - availableBits
-      availableBits -= n
+    return o
 
-      offset: offset
-      bit: bit
+  reserveBits: (n) ->
+    if @_availableBits >= n
+      offset = @_lastBitOffset
+    else
+      offset = @_lastBitOffset = @_size
+      @_availableBits = 8
+      @_size += 1
 
-    reserveBytes: (n) ->
-      offset = size
-      size += n
+    bit = 8 - @_availableBits
+    @_availableBits -= n
 
-      return offset
+    offset: offset
+    bit: bit
 
-    size: ->
-      size
+  reserveBytes: (n) ->
+    offset = @_size
+    @_size += n
 
-  return self
+    return offset
+
+  size: ->
+    @_size
+
+Object.assign StateManager.prototype, stateManageInstanceMethods
 
 module.exports = {
   DataStream: require "./data-stream"
@@ -468,6 +462,7 @@ module.exports = {
 #
 ###*
 @typedef {import("../types/types").DataTypeDefinitions} DataTypeDefinitions
+@typedef {import("../types/types").StateManager} StateManager
 @typedef {import("../types/types").StateManagerInstance} StateManagerInstance
 @typedef {import("../types/types").PropertyDefinition} PropertyDefinition
 

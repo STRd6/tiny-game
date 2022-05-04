@@ -4,7 +4,7 @@ AdHocEntity = require "../ad-hoc-entity"
   StateManager
   mapBehaviors
   toHex
-} = util = require "../util"
+} = require "../util"
 
 module.exports = (game) ->
   {U8, I32} = DataType
@@ -104,7 +104,7 @@ module.exports = (game) ->
       throw new Error "Can't create more than 256 classes!"
 
     # State data manager
-    stateManager = StateManager()
+    stateManager = new StateManager()
 
     # These need to be first since they have the $class id
     combinedProperties =

@@ -1,6 +1,31 @@
 Notes
 =====
 
+Types in CoffeeScript Projects
+----
+
+TypeScript is a pretty good documentation tool (not a great type system). It has
+strong support in VSCode. The goal of adding types is to get the Intellisense
+support for functions when programming in VSCode. A secondary goal would be to
+have a nice documentation reference/website.
+
+TypeDoc can publish an ok website from `.ts` files including `.d.ts` files.
+
+`types/types.d.ts` is the "source of truth" for all the documentation. It makes
+it easy to publish to npm (no extra build step!) but the downside is that the
+types need to be imported in the CoffeeScript files where they are implemented.
+
+TypeScript Classes vs. Constructor Functions
+----
+
+JSDoc style type hints don't work well with classes and would need to be
+duplicated between the types and the implementations in `.coffee` files.
+
+Using explicit constructor functions works pretty well but is slightly wonky in
+the types since they need both a `new (...): ...` and `(...): ...` signature.
+The non-new signature works when setting `AdHocEntity = ->` and the `new`
+signature is when the constructor is called with new.
+
 Debug Node.js using Chrome Dev Tools with `--inspect-brk`
 ----
 

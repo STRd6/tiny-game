@@ -1,6 +1,11 @@
 {DataType, StateManager} = require "./util"
 {I32, U8, RESERVE} = DataType
 
+#
+###*
+@type {AdHocEntityConstructor}
+###
+#@ts-ignore
 AdHocEntity = (properties) ->
   {behaviors} = properties
 
@@ -8,6 +13,7 @@ AdHocEntity = (properties) ->
   stateManager = new StateManager
 
   # These need to be first so we have a consistent byte order for the meta data
+  ###* @type {{[key: string]: PropertyDefinition}} ###
   combinedProperties =
     $class: U8
     behaviors:
@@ -41,7 +47,9 @@ AdHocEntity = (properties) ->
         # Write id for each behavior
         i = 0
         while i < l
-          $data.setUint16(offset + 2 * i, behaviors[i]._id)
+          behavior = behaviors[i]
+          assert behavior
+          $data.setUint16(offset + 2 * i, behavior._id)
           i++
     info:
       value: ->
@@ -52,23 +60,28 @@ AdHocEntity = (properties) ->
   i = 0
   while i < l
     b = behaviors[i++]
+    assert b
     Object.assign combinedProperties, b.properties
 
   return Object.defineProperties {$data: null},
+    #@ts-ignore
     stateManager.bindProps(combinedProperties)
 
-# Construct from a backing buffer using the same memory reference
-#@ts-ignore TODO this is needed when building the docs since it doesn't use exactly the same transformations that CoffeeSense uses
+#
+###* @type {AdHocEntityConstructor["fromBuffer"]} ###
+#@ts-ignore
 AdHocEntity.fromBuffer = (game, buffer, offset) ->
   data = new DataView buffer, offset
   $class = data.getUint8(0)
-  ID = data.getUint32(1)
+  data.getUint32(1) # ID
 
   assert.equal $class, 0,
     "Attempted to use AdHocEntity constructor for a registered class: #{$class}"
 
   {getBehaviorById} = game.system.base
   behaviorLength = data.getUint8(5)
+  #
+  ###* @type {Behavior[]} ###
   behaviors = new Array behaviorLength
   i = 0
   while i < behaviorLength
@@ -79,9 +92,16 @@ AdHocEntity.fromBuffer = (game, buffer, offset) ->
     i++
 
   e = AdHocEntity({behaviors})
-  #@ts-ignore TODO
   e.$data = new DataView buffer, offset, e.$byteLength
 
   return e
 
 module.exports = AdHocEntity
+
+#
+###*
+@typedef {import("../types/types").AdHocEntityConstructor} AdHocEntityConstructor
+@typedef {import("../types/types").AdHocEntity} AdHocEntity
+@typedef {import("../types/types").PropertyDefinition} PropertyDefinition
+@typedef {import("../types/types").Behavior} Behavior
+###

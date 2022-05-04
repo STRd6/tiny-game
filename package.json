@@ -2,6 +2,7 @@
   "name": "tiny-game",
   "version": "0.0.1",
   "main": "index.js",
+  "types": "types/types.d.ts",
   "author": "Daniel X Moore",
   "license": "SEE LICENSE IN 💖",
   "devDependencies": {

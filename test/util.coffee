@@ -148,7 +148,7 @@ describe "Util", ->
         prop:
           get: -> "heyy"
 
-      m = StateManager()
+      m = new StateManager()
       def = m.bindProps props
 
       o = Object.defineProperties {}, def
@@ -183,7 +183,7 @@ describe "Util", ->
         f16: FIXED16()
         f32: FIXED32()
 
-      m = StateManager()
+      m = new StateManager()
       def = m.bindProps props
 
       o = Object.defineProperties {}, def
@@ -214,7 +214,7 @@ describe "Util", ->
     it "should reserve bytes", ->
       {RESERVE} = DataType
 
-      m = StateManager()
+      m = new StateManager()
       def = m.bindProps
         r: RESERVE(24)
 
@@ -229,7 +229,7 @@ describe "Util", ->
     it "should read and write write U16 ararys", ->
       {U16A} = DataType
 
-      m = StateManager()
+      m = new StateManager()
       def = m.bindProps
         u16: U16A(16)
 
