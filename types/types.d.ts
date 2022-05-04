@@ -244,6 +244,16 @@ export interface AxesValues {
 
 export interface Controller extends ButtonValues, TriggerValues, AxesValues { }
 
+
+export interface KeyboardController extends Controller {
+  keydown: { [key: string]: boolean }
+}
+
+export interface KeyboardControllerConstructor {
+  (this: KeyboardController, keydown: { [key: string]: boolean }): KeyboardController
+  new(keydown: { [key: string]: boolean }): KeyboardController
+}
+
 export interface InputSnapshot extends Controller {
   data: Uint8Array
 }

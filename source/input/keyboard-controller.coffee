@@ -1,3 +1,7 @@
+###*
+@type {import("../../types/types").KeyboardControllerConstructor}
+###
+#@ts-ignore
 KeyboardController = (keydown) ->
   this.keydown = keydown
   return this
