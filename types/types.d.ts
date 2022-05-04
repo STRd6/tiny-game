@@ -16,11 +16,15 @@ export interface AdHocEntityConstructor {
 }
 
 export interface DataStreamConstructor {
+  (this: DataStream, buffer: ArrayBufferLike): DataStream
   new(buffer: ArrayBufferLike): DataStream
   prototype: DataStreamProto
 }
 
 export interface DataStreamProto {
+  getAscii(length: number): string
+  getBytes(length: number): Uint8Array
+
   getUint8(littleEndian?: boolean): U8
   getUint16(littleEndian?: boolean): U16
   getUint32(littleEndian?: boolean): U32
@@ -28,6 +32,19 @@ export interface DataStreamProto {
   getInt8(littleEndian?: boolean): I8
   getInt16(littleEndian?: boolean): I16
   getInt32(littleEndian?: boolean): I32
+
+  getFloat32(littleEndian?: boolean): number
+  getFloat64(littleEndian?: boolean): number
+
+  /**
+  Read a MIDI-style variable-length unsigned integer
+  (big-endian value in groups of 7 bits,
+  with top bit set to signify that another byte follows)
+   */
+  getVarUint(): number
+
+  putAscii(str: string): void
+  putBytes(bytes: Uint8Array): void
 
   putUint8(v: U8, littleEndian?: boolean): void
   putUint16(v: U16, littleEndian?: boolean): void
@@ -37,9 +54,15 @@ export interface DataStreamProto {
   putInt16(v: I16, littleEndian?: boolean): void
   putInt32(v: I32, littleEndian?: boolean): void
 
-  putBytes(bytes: ArrayLike<number>): void
+  putFloat32(v: number, littleEndian?: boolean): void
+  putFloat64(v: number, littleEndian?: boolean): void
 
+  putVarUint(v: number): void
+
+  bytes(): Uint8Array
   done(): boolean
+
+  reset(): void
 }
 
 export interface DataStream extends DataStreamProto {

@@ -35,7 +35,7 @@ describe "DataStream", ->
     stream = new DataStream new ArrayBuffer 0
 
     assert stream.done()
-  
+
   it "should return a subarray of bytes up to the current position", ->
     stream = new DataStream buffer
 
@@ -54,6 +54,12 @@ describe "DataStream", ->
     stream.putFloat32 128
     stream.reset()
     assert.equal stream.getFloat32(), 128
+
+    stream.reset()
+
+    stream.putFloat64 128
+    stream.reset()
+    assert.equal stream.getFloat64(), 128
 
   it "should read and write varUints", ->
     dataStream = new DataStream new ArrayBuffer 8

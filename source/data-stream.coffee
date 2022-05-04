@@ -1,4 +1,3 @@
-#@ts-nocheck TODO
 ###*
 DataStream
 
@@ -6,9 +5,9 @@ Read or write bytes to a DataView, auto-advancing the position.
 
 DataView methods but with get/put instead of get/set.
 
-@type {DataStreamConstructor}
+@type {import("../types/types").DataStreamConstructor}
 ###
-
+#@ts-ignore
 DataStream = (buffer) ->
   @byteLength = buffer.byteLength
   @byteView = new Uint8Array buffer
@@ -21,111 +20,134 @@ DataStream = (buffer) ->
   bytes = size / 8
 
   ["getUint", "getInt"].forEach (type) ->
+    #
+    ###* @type {"getUint8" | "getUint16" | "getUint32" | "getInt8" | "getInt16" | "getInt32" } ###
     fn = type + size
+
+    #
+    ###* @type {(this: import("../types/types").DataStream, littleEndian?: boolean) => number} ###
     DataStream::[fn] = (littleEndian) ->
       v = @view[fn](@position, littleEndian)
       @position += bytes
       return v
 
   ["setUint", "setInt"].forEach (type) ->
+    #
+    ###* @type {"setUint8" | "setUint16" | "setUint32" | "setInt8" | "setInt16" | "setInt32" } ###
     fn = type + size
+
+    #
+    ###* @type {(this: import("../types/types").DataStream, v: number, littleEndian?: boolean) => void} ###
     DataStream::[fn.replace(/^se/, "pu")] = (v, littleEndian) ->
       @view[fn](@position, v, littleEndian)
       @position += bytes
       return
 
-[32, 64].forEach (size) ->
-  bytes = size / 8
-  do ->
-    fn = "getFloat" + size
+  #
+  ###* @type {(this: import("../types/types").DataStream, littleEndian?: boolean) => number} ###
+  DataStream::getFloat32 = (littleEndian) ->
+    v = @view.getFloat32(@position, littleEndian)
+    @position += 4
+    return v
 
-    DataStream::[fn] = (littleEndian) ->
-      v = @view[fn](@position, littleEndian)
-      @position += bytes
-      return v
+  #
+  ###* @type {(this: import("../types/types").DataStream, littleEndian?: boolean) => number} ###
+  DataStream::getFloat64 = (littleEndian) ->
+    v = @view.getFloat64(@position, littleEndian)
+    @position += 8
+    return v
 
-  do ->
-    fn = "setFloat" + size
+  #
+  ###* @type {(this: import("../types/types").DataStream, v: number, littleEndian?: boolean) => void} ###
+  DataStream::putFloat32 = (v, littleEndian) ->
+    @view.setFloat32(@position, v, littleEndian)
+    @position += 4
+    return
 
-    DataStream::[fn.replace(/^se/, "pu")] = (v, littleEndian) ->
-      @view[fn](@position, v, littleEndian)
-      @position += bytes
-      return
+  #
+  ###* @type {(this: import("../types/types").DataStream, v: number, littleEndian?: boolean) => void} ###
+  DataStream::putFloat64 = (v, littleEndian) ->
+    @view.setFloat64(@position, v, littleEndian)
+    @position += 8
+    return
 
-do ->
-  {MAX_SAFE_INTEGER} = Number
+{MAX_SAFE_INTEGER} = Number
 
-  # ascii is a subset of utf-8
-  utf8Decoder = new TextDecoder 'utf-8'
+# ascii is a subset of utf-8
+utf8Decoder = new TextDecoder 'utf-8'
+#
+###* @type {import("../types/types").DataStream}###
+#@ts-ignore
+instanceMethods =
+  # Subarray of bytes to send over the network
+  # Classic pattern is to call reset, write out the data, then pass the result
+  # of `bytes` directly to the socket.
+  bytes: ->
+    return @byteView.subarray 0, @position
 
-  Object.assign DataStream::,
-    # Subarray of bytes to send over the network
-    # Classic pattern is to call reset, write out the data, then pass the result
-    # of `bytes` directly to the socket.
-    bytes: ->
-      return @byteView.subarray 0, @position
+  done: ->
+    @position >= @byteLength
 
-    done: ->
-      @position >= @byteLength
+  reset: ->
+    @position = 0
+    return
 
-    reset: ->
-      @position = 0
+  getAscii: (length) ->
+    utf8Decoder.decode @getBytes(length)
 
-    getAscii: (length) ->
-      utf8Decoder.decode @getBytes(length)
+  putAscii: (str) ->
+    bytes = new Uint8Array str.length
 
-    putAscii: (str) ->
-      bytes = new Uint8Array str.length
+    str.split('').forEach (c, i) ->
+      code = c.charCodeAt(0)
 
-      str.split('').forEach (c, i) ->
-        code = c.charCodeAt(0)
+      if code >= 0x80
+        throw new Error "Character out of range in '#{str}', index: #{i} char: #{c} (#{code} > #{0x80})"
 
-        if code >= 0x80
-          throw new Error "Character out of range in '#{str}', index: #{i} char: #{c} (#{code} > #{0x80})"
+      bytes[i] = code
 
-        bytes[i] = code
+    @putBytes bytes
 
-      @putBytes bytes
+  getBytes: (length) ->
+    p = @position
+    result = @byteView.subarray p, p + length
+    @position += length
 
-    getBytes: (length) ->
-      p = @position
-      result = @byteView.subarray p, p + length
-      @position += length
+    return result
 
-      return result
+  putBytes: (bytes) ->
+    @byteView.set(bytes, @position)
+    @position += bytes.length
 
-    putBytes: (bytes) ->
-      @byteView.set(bytes, @position)
-      @position += bytes.length
+    return
 
-      return
+  getVarUint: ->
+    result = 0
+    loop
+      b = @getUint8()
+      #@ts-ignore
+      if b & 0x80
+        #@ts-ignore
+        result += (b & 0x7f)
+        result *= 0x80
+      else
+        #@ts-ignore
+        return result + b
 
-    ###
-    read a MIDI-style variable-length unsigned integer
-    (big-endian value in groups of 7 bits,
-    with top bit set to signify that another byte follows)
-    ###
-    getVarUint: ->
-      result = 0
-      loop
-        b = @getUint8()
-        if b & 0x80
-          result += (b & 0x7f)
-          result *= 0x80
-        else
-          return result + b
+  putVarUint: (v) ->
+    if v > MAX_SAFE_INTEGER
+      throw new Error "Number out of range: #{v} > #{MAX_SAFE_INTEGER}"
 
-    putVarUint: (v) ->
-      if v > MAX_SAFE_INTEGER
-        throw new Error "Number out of range: #{v} > #{MAX_SAFE_INTEGER}"
+    b = 0x2000000000000 # 2^49
 
-      b = 0x2000000000000 # 2^49
+    while b > 1
+      if v >= b
+        @putUint8( (v / b) | 0x80 )
+      b /= 0x80
 
-      while b > 1
-        if v >= b
-          @putUint8( (v / b) | 0x80 )
-        b /= 0x80
+    @putUint8(v & 0x7f)
+    return
 
-      @putUint8(v & 0x7f)
+Object.assign DataStream::, instanceMethods
 
 module.exports = DataStream
