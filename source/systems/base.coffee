@@ -6,10 +6,17 @@ AdHocEntity = require "../ad-hoc-entity"
   toHex
 } = require "../util"
 
+
+#
+###*
+@type {import("../../types/types").BaseSystemConstructor}
+###
 module.exports = (game) ->
   {U8, I32} = DataType
   {assign, defineProperties, freeze} = Object
 
+  #
+  ###* @this {Behavior} ###
   behaviorToJSON = -> @_tag
 
   # These maps don't get reset across program reloads
@@ -27,6 +34,8 @@ module.exports = (game) ->
   behaviorIdMap = new Map
   nextBehaviorId = 0
 
+  #
+  ###* @param behavior {Behavior} ###
   registerBehavior = (behavior) ->
     {_tag: tag} = behavior
     previous = behaviorTagMap.get tag
@@ -42,6 +51,8 @@ module.exports = (game) ->
       behaviorTagMap.set tag, behavior
       behaviorIdMap.set id, behavior
 
+  #
+  ###* @param game {GameInstance} ###
   initBehaviors = (game) ->
     {behaviors, entities} = game
 
@@ -51,7 +62,9 @@ module.exports = (game) ->
     l = tags.length
     while i < l
       tag = tags[i++]
+      assert tag
       behavior = behaviors[tag]
+      assert behavior
       behavior._tag = tag
 
       # Assign byteId
@@ -74,7 +87,11 @@ module.exports = (game) ->
       # systems
       match = tag.match /^([^:]+):/
       if match
-        behavior._system = game.system[match[1]]
+        systemName = match[1]
+        assert systemName
+        sys = game.system[systemName]
+        assert sys
+        behavior._system = sys
       else
         behavior._system = game.system.base
 
@@ -82,20 +99,29 @@ module.exports = (game) ->
     l = entities.length
     while i < l
       e = entities[i++]
+      assert e
       e.behaviors = mapBehaviors e.behaviors, behaviors
 
     return
 
   nextClassId = 1
+  #
+  ###* @type {EntityConstructor<Entity>[]} ###
   classes = [AdHocEntity]
+  #
+  ###* @param id {number} ###
   getClassById = (id) ->
-    classes[id]
+    klass = classes[id]
+    assert klass
+    return klass
 
-  addClass = ({behaviors, defaults, properties}) ->
+  #
+  ###* @param definition {import("../../types/types").ClassDefinition} ###
+  addClass = ({behaviors:definedBehaviors, defaults, properties}) ->
     # Map behaviors from string tags into objects
     # TODO: maybe this can be simplified if everything is required to go through
     # addClass...
-    behaviors = freeze mapBehaviors behaviors, game.behaviors
+    behaviors = freeze mapBehaviors definedBehaviors, game.behaviors
 
     id = nextClassId++
 
@@ -119,6 +145,7 @@ module.exports = (game) ->
     l = behaviors.length
     while i < l
       b = behaviors[i++]
+      assert b
       assign combinedProperties, b.properties
 
     # Optional implicit class properties in addition to behavior properties
@@ -126,27 +153,33 @@ module.exports = (game) ->
 
     proto =
       $data: null
+      ###* @this {Entity} ###
       info: ->
         """
           #{toHex(@ID)} #{@$data.byteLength}/#{stateManager.size()} #{behaviors}
         """
+
+      ###* @return {Object} ###
       toJSON: ->
         self = this
 
-        jsonKeys.reduce (o, key) ->
-          o[key] = self[key]
-          return o
-        , {}
+        Object.fromEntries jsonKeys.map (key) ->
+          #@ts-ignore
+          [key, self[key]]
 
+    #@ts-ignore
     defineProperties proto, stateManager.bindProps(combinedProperties)
 
     # Save enumerable keys for toJSON method
+    #@ts-ignore
     jsonKeys = Object.entries(Object.getOwnPropertyDescriptors(proto)).filter ([key, {enumerable}]) ->
       enumerable
     .map ([key]) ->
       key
 
-    classes[id] = Constructor = (properties) ->
+    #
+    ###* @type {EntityConstructor<Entity>} ###
+    Constructor = (properties) ->
       e = Object.create(proto)
 
       e.$data = stateManager.alloc()
@@ -154,10 +187,11 @@ module.exports = (game) ->
 
       return assign e, defaults, properties
 
-    #@ts-ignore TODO
+    classes[id] = Constructor
+
     Constructor.byteLength = stateManager.size()
     # Construct from a backing buffer using the same memory reference
-    #@ts-ignore TODO
+    #@ts-ignore
     Constructor.fromBuffer = (game, buffer, offset) ->
       e = Constructor()
       e.$data = new DataView buffer, offset, stateManager.size()
@@ -169,18 +203,25 @@ module.exports = (game) ->
   # Add our mixins
   assign game,
     # define a class and return a constructor that adds entities as instances
+    ###* @param definition {ClassDefinition} ###
     addClass: (definition) ->
       id = addClass definition
 
       # Create and add instance
+      ###* @param properties {EntityProps} ###
       (properties) ->
-        game.addEntity classes[id](properties)
+        C = classes[id]
+        assert C
+        game.addEntity C(properties)
 
     classChecksum: ->
       classes.reduce (s, C) ->
+        #@ts-ignore
         s + C.byteLength|0
       , 0
 
+  #
+  ###* @type {BaseSystem} ###
   self =
     name: "base"
     initBehaviors: initBehaviors
@@ -211,6 +252,7 @@ module.exports = (game) ->
       l = es.length
       while i < l
         e = es[i++]
+        assert e
         updateEntity(e)
 
         if e.destroy
@@ -237,6 +279,7 @@ module.exports = (game) ->
       l = behaviors.length
       while i < l
         b = behaviors[i++]
+        assert b
         b.create?(e)
       return
 
@@ -246,6 +289,7 @@ module.exports = (game) ->
       l = behaviors.length
       while i < l
         b = behaviors[i++]
+        assert b
         b.update?(e)
       return
 
@@ -259,7 +303,26 @@ module.exports = (game) ->
       i = behaviors.length
       while i > 0
         b = behaviors[--i]
+        assert b
         if e.die
           b.die?(e)
         b.destroy?(e)
       return
+
+  return self
+
+#
+###*
+@typedef {import("../../types/types").BaseSystem} BaseSystem
+@typedef {import("../../types/types").Behavior} Behavior
+@typedef {import("../../types/types").ClassDefinition} ClassDefinition
+@typedef {import("../../types/types").GameInstance} GameInstance
+@typedef {import("../../types/types").Entity} Entity
+@typedef {import("../../types/types").EntityProps} EntityProps
+###
+
+#
+###*
+@template T
+@typedef {import("../../types/types").EntityConstructor} EntityConstructor
+###

@@ -7,6 +7,7 @@
 ###
 #@ts-ignore
 AdHocEntity = (properties) ->
+  assert properties
   {behaviors} = properties
 
   l = behaviors.length

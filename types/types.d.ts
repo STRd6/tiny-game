@@ -8,11 +8,17 @@ export interface I32 extends Number { }
 
 export interface AdHocEntity extends Entity { }
 
-export interface AdHocEntityConstructor {
-  (properties: { behaviors: Behavior[] }): AdHocEntity
+export interface AdHocEntityConstructor extends EntityConstructor<AdHocEntity> { }
 
+export interface EntityConstructor<T extends Entity = Entity> {
+  (properties?: EntityProps): T
+  byteLength?: number
   /** Construct from a backing buffer using the same memory reference */
-  fromBuffer(game: GameInstance, buffer: ArrayBufferLike, offest: number): AdHocEntity
+  fromBuffer(game: GameInstance, buffer: ArrayBufferLike, offest: number): T
+}
+
+export interface EntityProps {
+  behaviors: Behavior[]
 }
 
 export interface DataStreamConstructor {
@@ -78,26 +84,38 @@ export interface DataStream extends DataStreamProto {
 }
 
 export interface EntitySource {
-  ID: I32
+  ID: number // I32 TODO: TypeScript is really awkward about number subtypes
   behaviors: Behavior[]
   $class: U8
 }
 
 export interface Entity {
-  ID: I32
+  ID: number // I32 TODO: TypeScript is really awkward about number subtypes
   $class: U8
   $behaviorCount: U8
   $byteLength: number
   $data: DataView
+
+  behaviors: Behavior[]
+  destroy?: boolean
+  die?: boolean
+
   info(): string
 }
 
 export interface Behavior {
   _id: number
+  _system: System
   _tag: string
   properties: {
     [key: string]: PropertyDefinition
   }
+
+  create?(e: Entity): void
+  destroy?(e: Entity): void
+  die?(e: Entity): void
+  update?(e: Entity): void
+
   toString(): string
   toJSON(): string
 }
@@ -156,20 +174,34 @@ export interface GameInstance extends NetworkInstance {
 }
 
 export interface System {
-  beforeUpdate(self: GameInstance): void
+  name: string
+
+  beforeUpdate?(self: GameInstance): void
   update(self: GameInstance): void
-  afterUpdate(self: GameInstance): void
+  afterUpdate?(self: GameInstance): void
 
   create(self: GameInstance): void
-  createEntity(e: Entity): Entity
+  createEntity(e: Entity): void
 
   destroyEntity(e: Entity): unknown
 
   destroy(self: GameInstance): void
 }
 
+export interface SystemConstructor<T extends System> {
+  (game: GameInstance): T
+}
+
+export interface BaseSystemConstructor extends SystemConstructor<BaseSystem> {
+
+}
+
 export interface BaseSystem extends System {
+  name: "base"
   getBehaviorById(id: number): Behavior
+  getClassById(id: number): EntityConstructor<Entity>
+  initBehaviors(game: GameInstance): void
+  updateEntity(e: Entity): void
 }
 
 export interface NetworkInstance {
@@ -240,6 +272,14 @@ export interface StateManager {
   new(): StateManagerInstance
   (this: StateManagerInstance): StateManagerInstance
 }
+
+export interface ClassDefinition {
+  behaviors: Behavior[]
+  defaults: unknown
+  properties: PropertyDefinitions
+}
+
+// Input
 
 export interface ButtonValues {
   a: BIT
@@ -375,7 +415,7 @@ interface createEnum {
 // Util
 
 export interface mapBehaviors {
-  (tags: string[], table: Behaviors): Behavior[]
+  (tags: string[] | Behavior[], table: Behaviors): Behavior[]
 }
 
 export interface rand<T> {

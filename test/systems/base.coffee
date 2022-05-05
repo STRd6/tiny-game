@@ -34,9 +34,9 @@ describe "Base", ->
       system:
         base: null
       behaviors:
-        "test:cool": {}
+        "base:cool": {}
       entities: [{
-        behaviors: ["test:cool"]
+        behaviors: ["base:cool"]
       }]
 
     base = BaseSystem(game)
