@@ -95,16 +95,23 @@ DisplaySystem = (game) ->
     while e = entities[j++]
       {behaviors} = e
       i = 0
-      while b = behaviors[i++]
+      l = behaviors.length
+      while i < l
+        b = behaviors[i++]
+        assert b
         if b._system is self
-          {name, type} = b
-
-          if type is 'object'
-            addObjectToCamera(e, b, camera)
-          else if type is 'component'
-            addComponentToCamera(e, b, name, camera)
+          #
+          ###* @type {DisplayBehavior} ###
+          #@ts-ignore BLOCKED: https://github.com/jashkenas/coffeescript/issues/5418
+          displayBehavior = b
+          if displayBehavior.type is 'object'
+            addObjectToCamera(e, displayBehavior, camera)
+          else if displayBehavior.type is 'component'
+            addComponentToCamera(e, displayBehavior, displayBehavior.name, camera)
 
     return
+
+
 
   self =
     app: app
@@ -278,6 +285,7 @@ module.exports = DisplaySystem
 #
 ###*
 @typedef {import("../../types/types").BaseSystem} BaseSystem
+@typedef {import("../../types/types").DisplayBehavior} DisplayBehavior
 @typedef {import("../../types/types").DisplayComponentBehavior} DisplayComponentBehavior
 @typedef {import("../../types/types").DisplayObjectBehavior} DisplayObjectBehavior
 @typedef {import("../../types/types").Camera} Camera
