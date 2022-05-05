@@ -11,8 +11,14 @@
 DisplaySystem = (game) ->
   {screenWidth, screenHeight} = game.config
 
+  #
+  ###* @type {Map<number, Camera>} ###
   cameraMap = new Map
+  #
+  ###* @type {Camera[]} ###
   cameras = []
+  #
+  ###* @type {Record<string, DisplayHUD>} ###
   huds = {}
 
   #@ts-ignore TODO global PIXI
@@ -111,8 +117,10 @@ DisplaySystem = (game) ->
 
     return
 
-
-
+  #
+  ###*
+  @type {DisplaySystem}
+  ###
   self =
     app: app
     fullscreenHandler: fullscreenHandler
@@ -135,11 +143,14 @@ DisplaySystem = (game) ->
 
       render: (e, behavior) ->
         camera = cameraMap.get e.ID
+        assert camera
         behavior.render(e, camera)
         return
 
       destroy: (e) ->
-        cameraMap.get(e.ID).destroy
+        camera = cameraMap.get e.ID
+        assert camera
+        camera.destroy
           children: true
         cameraMap.delete e.ID
         cameras = Array.from cameraMap.values()
@@ -156,6 +167,7 @@ DisplaySystem = (game) ->
         cameras.forEach (camera) ->
           parent = camera.entityMap.get e.ID
 
+          #@ts-ignore
           behavior.render e, parent.getChildByName(name)
         return
 
@@ -169,13 +181,15 @@ DisplaySystem = (game) ->
 
       render: (e, behavior) ->
         cameras.forEach (camera) ->
-          displayObject = camera.entityMap.get(e.ID)
+          displayObject = camera.entityMap.get e.ID
+          assert displayObject
           behavior.render e, displayObject
         return
 
       destroy: (e) ->
         cameras.forEach (camera) ->
-          displayObject = camera.entityMap.get(e.ID)
+          displayObject = camera.entityMap.get e.ID
+          assert displayObject
           camera.entityMap.delete(e.ID)
           displayObject.destroy
             children: true
@@ -196,13 +210,16 @@ DisplaySystem = (game) ->
       render: (e, behavior, name) ->
         key = "#{name}:#{e.ID}"
         hud = huds[key]
+        assert hud
         behavior.render(e, hud)
         return
 
       destroy: (e, behavior, name) ->
         behavior.destroy?(e)
         key = "#{name}:#{e.ID}"
-        huds[key].destroy
+        hud = huds[key]
+        assert hud
+        hud.destroy
           children: true
         delete huds[key]
         return
@@ -210,10 +227,18 @@ DisplaySystem = (game) ->
     createEntity: (e) ->
       {behaviors} = e
       i = 0
-      while b = behaviors[i++]
+      l = behaviors.length
+      while i < l
+        b = behaviors[i++]
+        assert b
         if b._system is self
-          {name, type} = b
-          self[type].create(e, b, name)
+          #
+          ###* @type {DisplayBehavior} ###
+          #@ts-ignore
+          displayBehavior = b
+          {name, type} = displayBehavior
+          #@ts-ignore
+          self[type].create(e, displayBehavior, name)
       return
 
     updateEntity: noop
@@ -221,19 +246,34 @@ DisplaySystem = (game) ->
     destroyEntity: (e) ->
       {behaviors} = e
       i = 0
-      while b = behaviors[i++]
+      l = behaviors.length
+      while i < l
+        b = behaviors[i++]
+        assert b
         if b._system is self
-          {name, type} = b
-          self[type].destroy(e, b, name)
+          #
+          ###* @type {DisplayBehavior} ###
+          #@ts-ignore
+          displayBehavior = b
+          {name, type} = displayBehavior
+          #@ts-ignore
+          self[type].destroy(e, displayBehavior, name)
       return
 
     behaviorsAdded: ({behaviors}) ->
       Object.values(behaviors).forEach (b) ->
         # Annotate display behaviors with type and name
         if b._system is self
+          #
+          ###* @type {DisplayBehavior} ###
+          #@ts-ignore
+          displayBehavior = b
           [_, type, name] = b._tag.split ":"
-          b.type = type
-          b.name = name
+          assert type
+          #@ts-ignore
+          displayBehavior.type = type
+          displayBehavior.name = name
+        return
       return
 
     # When engine is created/initialized
@@ -265,13 +305,22 @@ DisplaySystem = (game) ->
 
     # When game.render is called
     render: ({entities}) ->
+      le = entities.length
       i = 0
-      while e = entities[i++]
+      while i < le
+        e = entities[i++]
+        assert e
         {behaviors} = e
+        lb = behaviors.length
         j = 0
-        while b = behaviors[j++]
+        while j < lb
+          b = behaviors[j++]
+          assert b
+          #@ts-ignore
           if b.display
+            #@ts-ignore
             {name, type} = b
+            #@ts-ignore
             self[type].render(e, b, name)
 
       app.renderer.render(app.stage)
@@ -287,7 +336,9 @@ module.exports = DisplaySystem
 @typedef {import("../../types/types").BaseSystem} BaseSystem
 @typedef {import("../../types/types").DisplayBehavior} DisplayBehavior
 @typedef {import("../../types/types").DisplayComponentBehavior} DisplayComponentBehavior
+@typedef {import("../../types/types").DisplayHUD} DisplayHUD
 @typedef {import("../../types/types").DisplayObjectBehavior} DisplayObjectBehavior
+@typedef {import("../../types/types").DisplaySystem} DisplaySystem
 @typedef {import("../../types/types").Camera} Camera
 @typedef {import("../../types/types").ClassDefinition} ClassDefinition
 @typedef {import("../../types/types").GameInstance} GameInstance
