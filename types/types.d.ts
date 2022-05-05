@@ -37,9 +37,9 @@ export interface DataStreamProto {
   getFloat64(littleEndian?: boolean): number
 
   /**
-  Read a MIDI-style variable-length unsigned integer
-  (big-endian value in groups of 7 bits,
-  with top bit set to signify that another byte follows)
+   Read a MIDI-style variable-length unsigned integer
+   (big-endian value in groups of 7 bits,
+   with top bit set to signify that another byte follows)
    */
   getVarUint(): number
 
@@ -59,6 +59,11 @@ export interface DataStreamProto {
 
   putVarUint(v: number): void
 
+  /**
+   Subarray of bytes to send over the network
+   A classic pattern is to call reset, write out the data, then pass the result
+   of `bytes` directly to the socket.
+   */
   bytes(): Uint8Array
   done(): boolean
 

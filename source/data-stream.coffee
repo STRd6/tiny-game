@@ -22,11 +22,12 @@ DataStream = (buffer) ->
   ["getUint", "getInt"].forEach (type) ->
     #
     ###* @type {"getUint8" | "getUint16" | "getUint32" | "getInt8" | "getInt16" | "getInt32" } ###
+    #@ts-ignore
     fn = type + size
 
     #
     ###* @type {(this: import("../types/types").DataStream, littleEndian?: boolean) => number} ###
-    DataStream::[fn] = (littleEndian) ->
+    DataStream.prototype[fn] = (littleEndian) ->
       v = @view[fn](@position, littleEndian)
       @position += bytes
       return v
@@ -34,10 +35,12 @@ DataStream = (buffer) ->
   ["setUint", "setInt"].forEach (type) ->
     #
     ###* @type {"setUint8" | "setUint16" | "setUint32" | "setInt8" | "setInt16" | "setInt32" } ###
+    #@ts-ignore
     fn = type + size
 
     #
     ###* @type {(this: import("../types/types").DataStream, v: number, littleEndian?: boolean) => void} ###
+    #@ts-ignore
     DataStream::[fn.replace(/^se/, "pu")] = (v, littleEndian) ->
       @view[fn](@position, v, littleEndian)
       @position += bytes
@@ -79,9 +82,6 @@ utf8Decoder = new TextDecoder 'utf-8'
 ###* @type {import("../types/types").DataStream}###
 #@ts-ignore
 instanceMethods =
-  # Subarray of bytes to send over the network
-  # Classic pattern is to call reset, write out the data, then pass the result
-  # of `bytes` directly to the socket.
   bytes: ->
     return @byteView.subarray 0, @position
 
