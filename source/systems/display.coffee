@@ -6,7 +6,9 @@
 {noop} = require "../util"
 {floor, min} = Math
 
-module.exports = DisplaySystem = (game) ->
+#
+###* @type {import("../../types/types").DisplaySystemConstructor} ###
+DisplaySystem = (game) ->
   {screenWidth, screenHeight} = game.config
 
   cameraMap = new Map
@@ -38,6 +40,8 @@ module.exports = DisplaySystem = (game) ->
   window.addEventListener "resize", adjustResolution
   adjustResolution()
 
+  #
+  ###* @param e {KeyboardEvent} ###
   fullscreenHandler = (e) ->
     {key} = e
     if key is "F11"
@@ -47,6 +51,12 @@ module.exports = DisplaySystem = (game) ->
       else
         app.view.requestFullscreen()
 
+  #
+  ###*
+  @param e {Entity}
+  @param behavior {DisplayObjectBehavior}
+  @param camera {Camera}
+  ###
   addObjectToCamera = (e, behavior, camera) ->
     behavior.create?(e)
     displayObject = behavior.display(e)
@@ -56,6 +66,13 @@ module.exports = DisplaySystem = (game) ->
     camera.viewport.addChild displayObject
     camera.entityMap.set e.ID, displayObject
 
+  #
+  ###*
+  @param e {Entity}
+  @param behavior {DisplayComponentBehavior}
+  @param name {string}
+  @param camera {Camera}
+  ###
   addComponentToCamera = (e, behavior, name, camera) ->
     behavior.create?(e)
     displayObject = behavior.display(e)
@@ -64,10 +81,15 @@ module.exports = DisplaySystem = (game) ->
     displayObject.name = name
 
     parent = camera.entityMap.get e.ID
+    assert parent
     parent.addChild displayObject
 
   # If a camera is added after there are displayable objects then each of those
   # objects needs to be added to the camera
+  ###*
+  @param entities {Entity[]}
+  @param camera {Camera}
+  ###
   addEntitiesToCamera = (entities, camera) ->
     j = 0
     while e = entities[j++]
@@ -250,3 +272,17 @@ module.exports = DisplaySystem = (game) ->
       return
 
   return self
+
+module.exports = DisplaySystem
+
+#
+###*
+@typedef {import("../../types/types").BaseSystem} BaseSystem
+@typedef {import("../../types/types").DisplayComponentBehavior} DisplayComponentBehavior
+@typedef {import("../../types/types").DisplayObjectBehavior} DisplayObjectBehavior
+@typedef {import("../../types/types").Camera} Camera
+@typedef {import("../../types/types").ClassDefinition} ClassDefinition
+@typedef {import("../../types/types").GameInstance} GameInstance
+@typedef {import("../../types/types").Entity} Entity
+@typedef {import("../../types/types").EntityProps} EntityProps
+###

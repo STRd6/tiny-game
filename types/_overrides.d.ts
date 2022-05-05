@@ -5,3 +5,7 @@ interface VibrationActuator {
 interface Gamepad {
   vibrationActuator: VibrationActuator
 }
+
+// Required for PIXI.js
+interface OffscreenCanvas { }
+interface OffscreenCanvasRenderingContext2D { }
