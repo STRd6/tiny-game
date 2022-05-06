@@ -1,3 +1,4 @@
+import { InputSystem } from "./input"
 import { NetworkSystem } from "./network"
 import { PropertyDefinition } from "./state-manager"
 
@@ -87,6 +88,7 @@ export interface GameInstance {
   system: {
     base: BaseSystem
     network: NetworkSystem
+    input: InputSystem
   }
   systems: System[]
   textures: unknown[]
@@ -94,6 +96,7 @@ export interface GameInstance {
 
   addEntity(e: EntitySource): unknown
   addBehaviors(behaviors: Behaviors): unknown
+  classChecksum(): U32
   create(): GameInstance
   createEntity(e: Entity): Entity
   data(): string

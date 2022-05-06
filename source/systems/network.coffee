@@ -5,38 +5,36 @@
 {DataStream, average, noop, remove} = require "../util"
 InputSnapshot = require "../input/snapshot"
 
-module.exports = NetworkSystem = (game) ->
+NetworkSystem = (game) ->
+  #
+  ###* @type {MessageTypes} ###
+  messageTypes =
+    #@ts-ignore
+    INIT: 0x01
+    #@ts-ignore
+    INPUT: 0x02
+    #@ts-ignore
+    SNAPSHOT: 0x1f
+    # Network status message sent to clients
+    #@ts-ignore
+    STATUS: 0x21
+    # Acknowledge receiving data for a specific tick
+    #@ts-ignore
+    ACK: 0x22
 
-  INIT = 0x01
-  INPUT = 0x02
-
-  SNAPSHOT = 0x1f
-
-  # Network status message sent to clients
-  STATUS = 0x21
-  # Acknowledge receiving data for a specific tick
-  ACK = 0x22
+  {INIT, INPUT, SNAPSHOT, STATUS, ACK} = messageTypes
 
   # TODO: consolidate message creation
+  ###* @type {Msg} ###
   Msg =
     ack: (tick) ->
       sendStream.reset()
 
       sendStream.putUint8 ACK
-      sendStream.putInt32 tick
+      sendStream.putUint32 tick
 
       sendStream.bytes()
 
-    # First message sent to client after connection is established.
-    # sends seed to sync up procedural generation.
-    # Don't need to send nextId because it will be impossible to keep in sync.
-    # Many objects can be created on the server between snapshots received by
-    # client.
-    # Probably want to simulate with client only obects that don't predict until
-    # receiving the actual server id (food type, item type, etc.). It looks bad
-    # if a food swaps sprite, but should look fine if it starts as a blur/cloud
-    # and pops in before hitting the ground.
-    # in sync with the server
     init: (game, client) ->
       sendStream.reset()
 
@@ -314,7 +312,12 @@ module.exports = NetworkSystem = (game) ->
 
   sendStream = new DataStream new ArrayBuffer 16 * 1024
 
+  #
+  ###*
+  @type {NetworkSystem}
+  ###
   self =
+    #@ts-ignore number -> U8
     clientId: 0
     status: ->
       if hosting
@@ -367,6 +370,8 @@ module.exports = NetworkSystem = (game) ->
             game.update()
           game.replaying = false
 
+      return
+
     update: noop
 
     afterUpdate: (game) ->
@@ -395,4 +400,19 @@ module.exports = NetworkSystem = (game) ->
         connections: []
 
       targetTick = 0
+      #@ts-ignore number -> U8
       self.clientId = 0
+
+      return
+
+  return self
+
+module.exports = NetworkSystem
+
+#
+###*
+@typedef {import("../../types/types").MessageTypes} MessageTypes
+@typedef {import("../../types/types").Msg} Msg
+@typedef {import("../../types/types").NetworkSystem} NetworkSystem
+@typedef {import("../../types/types").U8} U8
+###
