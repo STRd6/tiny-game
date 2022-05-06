@@ -112,8 +112,8 @@ export interface BufferedControllerConstructor {
 export interface InputSystemConstructor extends SystemConstructor<InputSystem> { }
 
 export interface InputSystem extends System {
-  controllers: Controller[]
-  controllerMap: Map<number, Controller>
+  controllers: BufferedController[]
+  controllerMap: Map<number, BufferedController>
   nullController: Controller
 
   getController(id: U8, clientId: U8): BufferedController

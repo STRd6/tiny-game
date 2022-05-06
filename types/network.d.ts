@@ -1,8 +1,8 @@
-import { GameInstance, System, U16, U32, U8 } from "./core"
+import Peer from "peerjs"
 
-export interface NetworkInstance {
-  hosting: boolean
-}
+import { GameInstance, System, SystemConstructor, U16, U32, U8 } from "./core"
+
+export interface NetworkSystemConstructor extends SystemConstructor<NetworkSystem> { }
 
 export interface NetworkSystem extends System {
   clientId: U8
@@ -37,4 +37,20 @@ export interface MessageTypes {
   SNAPSHOT: U8
   STATUS: U8
   ACK: U8
+}
+
+export interface ConnectionMeta {
+  tickMap: Map<U32, number>
+  rtts: number[]
+  stats: { [key: string]: any }
+
+  _handleDataMessage(this: ExtendedConnection, e: { data: ArrayBuffer }): void
+  send(data: ArrayBufferLike): void
+}
+
+export interface ExtendedConnection extends Omit<Peer.DataConnection, "send">, ConnectionMeta {
+  // These exist on Peer.DataConnection but aren't exposed in the types
+  connectionId: number
+
+  emit(type: "data", data: ArrayBuffer): void
 }

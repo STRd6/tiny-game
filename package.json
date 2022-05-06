@@ -6,17 +6,19 @@
   "author": "Daniel X Moore",
   "license": "SEE LICENSE IN 💖",
   "devDependencies": {
-    "@danielx/coffeecoverage": "4.0.0-pre.1",
+    "@danielx/coffeecoverage": "^4.0.0-pre.3",
     "@types/coffeescript": "^2.5.1",
     "@types/jsdom": "^16.2.14",
     "@types/mocha": "^9.1.1",
     "browserify": "^17.0.0",
     "canvas": "^2.9.0",
     "coffeescript": "2.6.1",
+    "esbuild": "^0.14.38",
     "jsdom": "^19.0.0",
     "mocha": "^9.2.0",
     "node-fetch": "^2.6.6",
     "nyc": "^15.1.0",
+    "peerjs": "^1.3.2",
     "pixi.js": "^6.2.2",
     "pixi.js-legacy": "^6.2.2",
     "typedoc": "^0.22.15",
@@ -51,11 +53,15 @@
     "extension": [
       ".coffee"
     ],
+    "exclude": [
+      "build/"
+    ],
     "sourceMap": false,
     "instrument": false
   },
   "scripts": {
-    "build": "bash script/prepublish && bash script/browser",
+    "build": "bash script/prepublish && coffee build/main.coffee",
+    "build-b": "bash script/prepublish && bash script/browser",
     "doc": "typedoc types/types.d.ts",
     "prepublish": "bash script/prepublish",
     "test": "nyc mocha"

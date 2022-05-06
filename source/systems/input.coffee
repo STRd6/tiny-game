@@ -102,7 +102,6 @@ module.exports = (game) ->
         # Update gamepads
         # index 0-7 reserved for gamepads
         Array.from(navigator.getGamepads()).forEach (gamepad, index) ->
-          assert gamepad
           #@ts-ignore number -> U8
           updateController index, clientId, "#{game.localId}-#{index}", tick, InputSnapshot.from(gamepad)
 

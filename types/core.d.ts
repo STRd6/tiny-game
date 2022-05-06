@@ -1,5 +1,6 @@
+import Peer from "peerjs"
 import { InputSystem } from "./input"
-import { NetworkSystem } from "./network"
+import { ExtendedConnection, NetworkSystem } from "./network"
 import { PropertyDefinition } from "./state-manager"
 
 declare const NSym: unique symbol
@@ -114,6 +115,12 @@ export interface GameInstance {
 
   render(): void
   update(): void
+
+  // Network
+  hosting: {
+    connections: ExtendedConnection[]
+    peer?: Peer
+  }
 }
 
 export interface System {

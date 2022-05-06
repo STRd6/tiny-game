@@ -1,10 +1,17 @@
 # Network Experiments
 # max cross browser data packet size is 16 * 1024
 
+#@ts-ignore
+Peer = require "peerjs"
+#@ts-ignore
+Peer = Peer.default
+
 {ceil, min} = Math
 {DataStream, average, noop, remove} = require "../util"
 InputSnapshot = require "../input/snapshot"
 
+#
+###* @type {NetworkSystemConstructor} ###
 NetworkSystem = (game) ->
   #
   ###* @type {MessageTypes} ###
@@ -53,6 +60,7 @@ NetworkSystem = (game) ->
       game.system.input.controllers.forEach (controller) ->
         sendStream.putUint8 controller.id
         bytes = controller.recent(3)
+        #@ts-ignore bytes.length number -> U8
         sendStream.putUint8 bytes.length / InputSnapshot.SIZE
         sendStream.putBytes bytes
 
@@ -69,9 +77,17 @@ NetworkSystem = (game) ->
 
       sendStream.bytes()
 
+  #
+  ###* @type {ExtendedConnection["_handleDataMessage"]}###
   _handleDataMessage = ({data}) ->
     @emit "data", data
+    return
 
+  #
+  ###*
+  @this {ExtendedConnection}
+  @param data {ArrayBufferLike}
+  ###
   send = (data) ->
     try
       @dataChannel.send data
@@ -80,17 +96,32 @@ NetworkSystem = (game) ->
 
       @close()
 
-  ###
+  #
+  ###*
   Override `send` and `_handleDataMessage` of the peerjs dataconnection to
-  gain full control over the serialization and data channel.
+  gain full control over the serialization and data channel. Also track
+  connection status metadata.
+  @param c {DataConnection}
+  @return {ExtendedConnection}
   ###
   modifyDataConnection = (c) ->
-    Object.assign c,
+    #
+    ###* @type {ConnectionMeta} ###
+    connectionMeta =
+      tickMap: new Map
+      rtts: []
+      stats:
+        received: 0 # bytes received from client
       _handleDataMessage: _handleDataMessage
       send: send
 
+    #@ts-ignore emit and connectionId aren't declared on connectionMeta, they are internal but available to `Peer.DataConnection`
+    Object.assign c, connectionMeta
+
   # target tick = 1/2 avg rtt + 1 frame
   host = null
+  #
+  ###* @type {GameInstance["hosting"]} ###
   hosting =
     connections: []
 
@@ -109,6 +140,9 @@ NetworkSystem = (game) ->
       hosting.peer?.disconnect()
     catch e
       console.warn e
+
+    #
+    ###* @type {ExtendedConnection[]} ###
     connections = []
 
     nextClientId = 1
@@ -136,23 +170,16 @@ NetworkSystem = (game) ->
 
       return client
 
-    #@ts-ignore TODO global peerjs
-    peer = new peerjs.Peer(game.localId)
+    peer = new Peer(game.localId)
 
     peer.on 'error', console.error
 
     peer.on 'open', (id) ->
       console.log "Host connection open!", id
 
-    peer.on 'connection', (client) ->
+    peer.on 'connection', (c) ->
       # console.log 'connection', client
-
-      modifyDataConnection client
-
-      client.tickMap = new Map
-      client.rtts = []
-      client.stats =
-        received: 0 # bytes received from client
+      client = modifyDataConnection c
 
       client.on 'data', (data) ->
         if data.constructor is ArrayBuffer
@@ -168,7 +195,7 @@ NetworkSystem = (game) ->
               client.rtts.unshift rtt
               client.rtts.length = min 300, client.rtts.length
 
-              client.send Msg.status average client.rtts
+              client.send Msg.status average(client.rtts) or 0
 
             when INPUT
               {tick, system} = game
@@ -227,8 +254,7 @@ NetworkSystem = (game) ->
       tick: -1
 
     id = game.localId
-    #@ts-ignore TODO global peerjs
-    peer = new peerjs.Peer(id)
+    peer = new Peer(id)
 
     stats =
       # snapshots
@@ -350,6 +376,7 @@ NetworkSystem = (game) ->
           avgRtt ||= 150
 
           if latestSnapshot.needsReset
+            #@ts-ignore number -> U32
             game.system.input.resetControllers tick
             latestSnapshot.needsReset = false
 
@@ -411,8 +438,15 @@ module.exports = NetworkSystem
 
 #
 ###*
+@typedef {import("peerjs").DataConnection} DataConnection
+@typedef {typeof import("peerjs")} Peer
+
+@typedef {import("../../types/types").ConnectionMeta} ConnectionMeta
+@typedef {import("../../types/types").ExtendedConnection} ExtendedConnection
+@typedef {import("../../types/types").GameInstance} GameInstance
 @typedef {import("../../types/types").MessageTypes} MessageTypes
 @typedef {import("../../types/types").Msg} Msg
 @typedef {import("../../types/types").NetworkSystem} NetworkSystem
+@typedef {import("../../types/types").NetworkSystemConstructor} NetworkSystemConstructor
 @typedef {import("../../types/types").U8} U8
 ###
