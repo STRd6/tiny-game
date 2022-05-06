@@ -1,4 +1,4 @@
-{noop, triggerToNibble, axisToNibble, nibbleToAxis} = require "../util"
+{noop} = require "../util"
 
 BufferedController = require "../input/buffered-controller"
 InputSnapshot = require "../input/snapshot"
@@ -7,33 +7,37 @@ KeyboardController = require "../input/keyboard-controller"
 
 ## Gamepads
 
+###* @type {InputSystemConstructor} ###
+#@ts-ignore game unused
 module.exports = (game) ->
 
   # Debugging info for gamepads
+  ###* @param e {GamepadEvent} ###
   gamepadConnectedHandler = ({gamepad}) ->
+    #@ts-ignore
     console.log gamepad.info
 
   # Keyboard handling using code (physical key without layout or modifiers)
+  ###* @type {Keydown} ###
   keydown = {}
+  #
+  ###* @param e {KeyboardEvent} ###
   keydownHandler = ({code}) ->
     keydown[code] = true
+  #
+  ###* @param e {KeyboardEvent} ###
   keyupHandler = ({code}) ->
     keydown[code] = false
 
   keyboardController = new KeyboardController(keydown)
 
   controllerMap = new Map
+  #
+  ###* @type {BufferedController[]} ###
   controllers = []
 
-  # Set of entities that have input controls
-  entitiesControls = new Set
-
-  # CID (controller ID) is a string to identify the controller. It should be
-  # somewhat readable for easy debugging K0 is keyboard G0-3 are gamepads
-  # Network controllers are prefixed with the client id.
-  # id is a byte representing the id of the controller on the local system
-  # clientId is a byte linking the controller to a network client
-  # host's clientId is 0
+  #
+  ###* @type {InputSystem["updateController"]} ###
   updateController = (id, clientId, CID, tick, controller) ->
     existingController = self.getController(id, clientId)
 
@@ -46,6 +50,8 @@ module.exports = (game) ->
 
     return
 
+  #
+  ###* @type {InputSystem["registerController"]} ###
   registerController = (id, clientId, CID, tick) ->
     c = new BufferedController id, clientId, CID, tick - 1
     key = (clientId << 8) + id
@@ -57,12 +63,17 @@ module.exports = (game) ->
 
     return c
 
+  #
+  ###* @type {InputSystem} ###
   self =
+    name: "input"
     controllers: controllers
     controllerMap: controllerMap
     registerController: registerController
+    updateController: updateController
 
-    nullController: new BufferedController 0xff, 0xff, "NullController", -1
+    #@ts-ignore
+    nullController: new BufferedController 0xff, 0xff, "NullController", -1, 10
 
     getController: (id, clientId) ->
       key = (clientId << 8) + id
@@ -72,6 +83,8 @@ module.exports = (game) ->
     resetControllers: (tick) ->
       controllers.forEach (controller) ->
         controller.reset(tick)
+      return
+
 
     createEntity: noop
     destroyEntity: noop
@@ -89,10 +102,13 @@ module.exports = (game) ->
         # Update gamepads
         # index 0-7 reserved for gamepads
         Array.from(navigator.getGamepads()).forEach (gamepad, index) ->
+          assert gamepad
+          #@ts-ignore number -> U8
           updateController index, clientId, "#{game.localId}-#{index}", tick, InputSnapshot.from(gamepad)
 
         # Update keyboard inputs
         # index 8-9 reserved for keyboard
+        #@ts-ignore number -> U8
         updateController 8, clientId, "#{game.localId}-8", tick, InputSnapshot.from(keyboardController)
 
       # Update all controllers (network, replay, all) to be at current tick
@@ -104,6 +120,7 @@ module.exports = (game) ->
         # if tick % 60 is 0
         #   console.log c.current.data
 
+    #@ts-ignore
     create: (game) ->
       document.addEventListener "keydown", keydownHandler
       document.addEventListener "keyup", keyupHandler
@@ -112,6 +129,7 @@ module.exports = (game) ->
 
     update: noop
 
+    #@ts-ignore
     destroy: (game) ->
       document.removeEventListener "keydown", keydownHandler
       document.removeEventListener "keyup", keyupHandler
@@ -121,9 +139,21 @@ module.exports = (game) ->
       controllerMap.clear()
       controllers.length = 0
 
+  return self
+
+
 Object.assign module.exports, {
   BufferedController
   Gamepad
   InputSnapshot
   KeyboardController
 }
+
+#
+###*
+@typedef {import("../../types/types").BufferedController} BufferedController
+@typedef {import("../../types/types").Controller} Controller
+@typedef {import("../../types/types").InputSystem} InputSystem
+@typedef {import("../../types/types").InputSystemConstructor} InputSystemConstructor
+@typedef {import("../../types/types").Keydown} Keydown
+###

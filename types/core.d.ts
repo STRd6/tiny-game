@@ -1,12 +1,15 @@
+import { NetworkSystem } from "./network"
 import { PropertyDefinition } from "./state-manager"
 
+declare const NSym: unique symbol
+
 export type BIT = 0 | 1
-export interface U8 extends U16 { }
-export interface U16 extends U32 { }
-export interface U32 extends Number { }
-export interface I8 extends I16 { }
-export interface I16 extends I32 { }
-export interface I32 extends Number { }
+export type U8 = number & { [NSym]: "U8" }
+export type U16 = number & { [NSym]: "U16" }
+export type U32 = number & { [NSym]: "U32" }
+export type I8 = number & { [NSym]: "I8" }
+export type I16 = number & { [NSym]: "I16" }
+export type I32 = number & { [NSym]: "I32" }
 
 export interface EntityConstructor<T extends Entity = Entity> {
   (properties?: EntityProps): T
@@ -79,10 +82,11 @@ export interface GameInstance {
   entityMap: Map<Entity["ID"], Entity>
   localId: string
   pendingEntities: Entity[]
+  replaying: boolean
   seed: U32
   system: {
     base: BaseSystem
-    [key: string]: System
+    network: NetworkSystem
   }
   systems: System[]
   textures: unknown[]

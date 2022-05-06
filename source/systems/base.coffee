@@ -89,6 +89,7 @@ module.exports = (game) ->
       if match
         systemName = match[1]
         assert systemName
+        #@ts-ignore
         sys = game.system[systemName]
         assert sys
         behavior._system = sys

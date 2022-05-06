@@ -1,6 +1,6 @@
 // Input
 
-import { BIT, U8 } from "./core"
+import { BIT, System, SystemConstructor, U32, U8 } from "./core"
 
 export interface ButtonValues {
   a: BIT
@@ -31,11 +31,17 @@ export interface AxesValues {
   axes: [number, number, number, number]
 }
 
-export interface Controller extends ButtonValues, TriggerValues, AxesValues { }
+export interface Controller extends ButtonValues, TriggerValues, AxesValues {
+  at(tick: U32): void
+  reset(tick: U32): void
+}
 
+export interface Keydown {
+  [key: string]: boolean
+}
 
 export interface KeyboardController extends Controller {
-  keydown: { [key: string]: boolean }
+  keydown: Keydown
 }
 
 export interface KeyboardControllerConstructor {
@@ -96,9 +102,31 @@ export interface BufferedController extends Controller {
 }
 
 export interface BufferedControllerConstructor {
-  (this: BufferedController, id: U8, clientId: U8, description: string, startTick: number, bufferSize: number): BufferedController
-  new(id: U8, clientId: U8, description: string, startTick: number, bufferSize: number): BufferedController
+  (this: BufferedController, id: U8, clientId: U8, description: string, startTick: number, bufferSize?: number): BufferedController
+  new(id: U8, clientId: U8, description: string, startTick: number, bufferSize?: number): BufferedController
 
   BUTTONS: string[]
   defaultBufferSize: number
+}
+
+export interface InputSystemConstructor extends SystemConstructor<InputSystem> { }
+
+export interface InputSystem extends System {
+  controllers: Controller[]
+  controllerMap: Map<number, Controller>
+  nullController: Controller
+
+  getController(id: U8, clientId: U8): BufferedController
+  registerController(id: U8, clientId: U8, CID: string, tick: number): BufferedController
+  resetControllers(tick: U32): void
+  /**
+  CID (controller ID) is a string to identify the controller. It should be
+  somewhat readable for easy debugging K0 is keyboard G0-3 are gamepads
+  Network controllers are prefixed with the client id.
+  id is a byte representing the id of the controller on the local system
+  clientId is a byte linking the controller to a network client
+  host's clientId is 0
+  # */
+  updateController(id: U8, clientId: U8, CID: string, tick: number, controller: InputSnapshot): void
+
 }
