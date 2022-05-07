@@ -42,7 +42,7 @@
   },
   "nyc": {
     "check-coverage": true,
-    "branches": 98,
+    "branches": 96,
     "lines": 99,
     "functions": 100,
     "statements": 99,
