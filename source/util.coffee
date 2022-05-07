@@ -50,7 +50,7 @@ mapBehaviors = (tags, table) ->
   while i < l
     tag = tags[i++]
     assert tag
-    behavior = table[tag]
+    behavior = table[String(tag)]
     if !behavior
       console.warn "Couldn't find behavior #{JSON.stringify(tag)}"
       continue

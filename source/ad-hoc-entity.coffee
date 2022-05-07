@@ -35,9 +35,11 @@ AdHocEntity = (properties) ->
     $init:
       value: ->
         # Store class id of zero (optional since defaults to zero)
+        #@ts-ignore number -> U8
         @$class = 0
 
         # Store behavior count uint8
+        #@ts-ignore number -> U8
         @$behaviorCount = l
 
         #@ts-ignore TODO this is needed when building the docs since it doesn't use exactly the same transformations that CoffeeSense uses

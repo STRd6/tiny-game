@@ -27,6 +27,7 @@ DataStream = (buffer) ->
 
     #
     ###* @type {(this: import("../types/types").DataStream, littleEndian?: boolean) => number} ###
+    #@ts-ignore number -> U8...
     DataStream.prototype[fn] = (littleEndian) ->
       v = @view[fn](@position, littleEndian)
       @position += bytes
@@ -142,9 +143,11 @@ instanceMethods =
 
     while b > 1
       if v >= b
+        #@ts-ignore number -> U8
         @putUint8( (v / b) | 0x80 )
       b /= 0x80
 
+    #@ts-ignore number -> U8
     @putUint8(v & 0x7f)
     return
 

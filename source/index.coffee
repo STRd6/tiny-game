@@ -82,6 +82,7 @@ TinyGame = (options) ->
       {systems} = self
 
       # Roll a new random seed
+      #@ts-ignore number -> U32
       self.seed = floor rand 0x100000000
 
       # Initialize systems
@@ -134,6 +135,7 @@ TinyGame = (options) ->
 
       buffer = new ArrayBuffer l
       dataStream = new DataStream buffer
+      #@ts-ignore number -> U8 TODO: Use network message type as enum
       dataStream.putUint8 0x1F
       dataStream.putUint32 self.seed
       dataStream.putUint32 self.tick
@@ -220,6 +222,7 @@ TinyGame = (options) ->
       self.pendingEntities.length = 0
 
       nextID = 1
+      #@ts-ignore number -> U32
       self.tick = 0
 
       return self
@@ -292,15 +295,18 @@ TinyGame = (options) ->
     render: ->
       displaySystem.render(self)
 
+    #@ts-ignore number -> U32
     seed: 0
 
     systems: []
+    #@ts-ignore
     system: {}
 
     # Store textures by name and id for ease of use
     textures: []
 
     # Current game tick (frames)
+    #@ts-ignore number -> U32
     tick: 0
 
     update: ->
