@@ -6,6 +6,7 @@ export interface NetworkSystemConstructor extends SystemConstructor<NetworkSyste
 
 export interface NetworkSystem extends System {
   clientId: U8
+  registerConnection(client: ExtendedConnection): void
   /** Log a network status message to console. */
   status(): void
 }
@@ -24,10 +25,10 @@ export interface Msg {
    and pops in before hitting the ground.
    in sync with the server
    */
-  init(game: GameInstance, client: unknown): void
-  input(game: GameInstance): void
-  snapshot(game: GameInstance): void
-  status(avgRtt: U16): void
+  init(game: GameInstance, client: ExtendedConnection): ArrayBufferLike
+  input(game: GameInstance): ArrayBufferLike
+  snapshot(game: GameInstance): ArrayBufferLike
+  status(avgRtt: U16): ArrayBufferLike
 }
 
 // TODO: TypeScript enum?
@@ -40,6 +41,8 @@ export interface MessageTypes {
 }
 
 export interface ConnectionMeta {
+  id: U8
+
   tickMap: Map<U32, number>
   rtts: number[]
   stats: { [key: string]: any }

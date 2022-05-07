@@ -107,6 +107,7 @@ NetworkSystem = (game) ->
   modifyDataConnection = (c) ->
     #
     ###* @type {ConnectionMeta} ###
+    #@ts-ignore
     connectionMeta =
       tickMap: new Map
       rtts: []
@@ -119,6 +120,7 @@ NetworkSystem = (game) ->
     Object.assign c, connectionMeta
 
   # target tick = 1/2 avg rtt + 1 frame
+  ###* @type {Peer.DataConnection | null} ###
   host = null
   #
   ###* @type {GameInstance["hosting"]} ###
@@ -126,49 +128,31 @@ NetworkSystem = (game) ->
     connections: []
 
   latestSnapshot =
-    entities: []
+    avgRtt: 150
+    buffer: new ArrayBuffer 0
     needsUpdate: false
     needsReset: true
     tick: -1
 
   targetTick = 0
 
+  #
+  ###* @type {ExtendedConnection[]} ###
+  connections = []
+  nextClientId = 1
+  # client string id -> client
+  ###* @type {Map<string, ExtendedConnection>} ###
+  clientMap = new Map
+
   hostGame = ->
     # Close old connections
-    hosting.connections?.forEach (conn) -> conn.close()
-    try
+    if hosting
+      hosting.connections.forEach (conn) -> conn.close()
       hosting.peer?.disconnect()
-    catch e
-      console.warn e
 
-    #
-    ###* @type {ExtendedConnection[]} ###
-    connections = []
-
+    connections.length = 0
     nextClientId = 1
-    # client string id -> client
-    clientMap = new Map
-    registerConnection = (client) ->
-      key = client.peer
-      existing = clientMap.get(key)
-      if existing
-        throw new Error "TODO: Handle client reconnection"
-        remove connections, existing
-        existing.close()
-        id = existing.id
-      else
-        id = nextClientId++
-
-      if id > 0xff
-        throw new Error "Too many client connections"
-
-      client.id = id
-      clientMap.set(key, client)
-
-      connections.push client
-      client.send Msg.init game, client
-
-      return client
+    clientMap.clear()
 
     peer = new Peer(game.localId)
 
@@ -191,10 +175,14 @@ NetworkSystem = (game) ->
           switch recvStream.getUint8()
             when ACK
               recvTick = recvStream.getUint32()
+
+              #TODO: Free old tickmap entries eventually
+              #@ts-ignore
               rtt = performance.now() - client.tickMap.get(recvTick)
               client.rtts.unshift rtt
               client.rtts.length = min 300, client.rtts.length
 
+              #@ts-ignore number -> U16
               client.send Msg.status average(client.rtts) or 0
 
             when INPUT
@@ -228,11 +216,14 @@ NetworkSystem = (game) ->
 
       # Can't send until open
       client.on 'open', ->
-        registerConnection(client)
+        self.registerConnection(client)
+        return
 
       client.on 'close', ->
         # console.log "Close", client
-        remove hosting.connections, client
+        if hosting
+          remove hosting.connections, client
+        return
 
     game.hosting = hosting = {
       connections
@@ -241,14 +232,19 @@ NetworkSystem = (game) ->
 
     return peer
 
+  #
+  ###*
+  @param hostId {string}
+  ###
   joinGame = (hostId) ->
     # Re-init to make sure controllers pick up client id
     game.hardReset()
 
-    game.hosting = hosting = false
+    game.hosting = hosting = undefined
 
     latestSnapshot =
-      entities: []
+      avgRtt: 150
+      buffer: new ArrayBuffer 0
       needsUpdate: false
       needsReset: true
       tick: -1
@@ -280,6 +276,7 @@ NetworkSystem = (game) ->
 
       modifyDataConnection conn
 
+      #@ts-ignore Expose connection for testing / debugging. TODO: expose more cleanly
       peer._conn = conn
 
       conn.on 'close', ->
@@ -314,9 +311,10 @@ NetworkSystem = (game) ->
               # console.log "Setting clientId: #{clientId}"
 
             when SNAPSHOT
-              seed = recvStream.getUint32()
+              recvStream.getUint32() # seed
               tick = recvStream.getUint32()
 
+              assert host
               host.send Msg.ack tick
 
               if latestSnapshot.tick < tick
@@ -345,6 +343,30 @@ NetworkSystem = (game) ->
   self =
     #@ts-ignore number -> U8
     clientId: 0
+    registerConnection: (client) ->
+      key = client.peer
+      existing = clientMap.get(key)
+      if existing
+        throw new Error "TODO: Handle client reconnection"
+        # remove connections, existing
+        # existing.close()
+        # id = existing.id
+      else
+        ###* @type {U8} ###
+        #@ts-ignore number -> U8
+        id = nextClientId++
+
+      if id > 0xff
+        throw new Error "Too many client connections"
+
+      client.id = id
+      clientMap.set(key, client)
+
+      connections.push client
+      client.send Msg.init game, client
+
+      return client
+
     status: ->
       if hosting
         "connections:\n" + hosting.connections.map (c) ->
@@ -372,7 +394,7 @@ NetworkSystem = (game) ->
         # Reconcile game state with previous states
         if latestSnapshot.needsUpdate
           latestSnapshot.needsUpdate = false
-          {tick, entities, avgRtt} = latestSnapshot
+          {tick, avgRtt} = latestSnapshot
           avgRtt ||= 150
 
           if latestSnapshot.needsReset
@@ -389,6 +411,7 @@ NetworkSystem = (game) ->
 
           # update game state from buffer data
           game.reloadBuffer(latestSnapshot.buffer)
+          #@ts-ignore number -> U32
           game.tick = tick
 
           # simulate up to current tick, replaying input
@@ -419,7 +442,7 @@ NetworkSystem = (game) ->
 
     destroy: ->
       # Close all connections
-      hosting.connections?.forEach (conn) -> conn.close()
+      hosting?.connections?.forEach (conn) -> conn.close()
       host?.close()
 
       host = null

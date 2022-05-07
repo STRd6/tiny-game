@@ -120,7 +120,9 @@ export interface GameInstance {
   hosting: {
     connections: ExtendedConnection[]
     peer?: Peer
-  }
+  } | undefined
+  hostGame(): void
+  joinGame(hostId: string): void
 }
 
 export interface System {
