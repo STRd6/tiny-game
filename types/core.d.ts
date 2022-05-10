@@ -32,6 +32,8 @@ export interface EntitySource {
 
 export interface Entity {
   ID: number // I32 TODO: TypeScript is really awkward about number subtypes
+  $alloc(): void
+  $init(): void
   $class: U8
   $behaviorCount: U8
   $byteLength: number
@@ -79,7 +81,7 @@ export interface GameState {
 export interface GameInstance {
   behaviors: Behaviors
   config: Configuration
-  defaultBehaviors: unknown[]
+  defaultBehaviors: Behavior[]
   entities: Entity[]
   entityMap: Map<Entity["ID"], Entity>
   localId: string

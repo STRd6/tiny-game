@@ -22,7 +22,7 @@ InputSystem = require "./systems/input"
 NetworkSystem = require "./systems/network"
 SoundSystem = require "./systems/sound"
 
-TinyGame = (options) ->
+TinyGame = ->
   # Need to start above zero so we can use negatives to represent client
   # predicted objects
   nextID = 1
@@ -56,6 +56,7 @@ TinyGame = (options) ->
         Object.assign o, e
         e = o
 
+      #@ts-ignore EntitySource has become Entity
       self.pendingEntities.push self.createEntity(e)
 
       return e
@@ -277,6 +278,7 @@ TinyGame = (options) ->
         if !entityMap.has ID
           console.log "creating #{ID}"
 
+          #@ts-ignore EntitySource has become Entity
           self.pendingEntities.push createEntity e
         else # update
           # keep same reference to existing object
