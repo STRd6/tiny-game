@@ -8,9 +8,9 @@ export interface mapBehaviors {
   (tags: string[] | Behavior[], table: Behaviors): Behavior[]
 }
 
-export interface rand<T> {
+export interface rand {
+  <T>(n: T[]): T | undefined
   (n: number): number
-  (n: T[]): T
 }
 
 export interface stopKeyboardHandler {

@@ -7,17 +7,34 @@
 decoder = new TextDecoder("utf-8")
 stripNulls = /\u0000+$/
 
+#
+###*
+@param nameBuffer {Uint8Array}
+###
 parseName = (nameBuffer) ->
   decoder.decode(nameBuffer).replace(stripNulls, "")
 
-module.exports = FXXPlayer = (fxxBuffer, context) ->
+#
+###*
+@param fxxBuffer {ArrayBufferLike}
+@param context {AudioContext}
+###
+FXXPlayer = (fxxBuffer, context) ->
   context ?= new AudioContext
+  #
+  ###* @type {{[key: string]: AudioBuffer[]}} ###
   sounds = {}
 
   self =
+    ###*
+    @param newContext {AudioContext}
+    ###
     bind: (newContext) ->
       context = newContext
 
+    ###*
+    @param fxxBuffer {ArrayBufferLike}
+    ###
     loadData: (fxxBuffer) ->
       sounds = {}
 
@@ -27,7 +44,6 @@ module.exports = FXXPlayer = (fxxBuffer, context) ->
       numEntries = floor (l - 8) / 116
 
       # Populate data entries
-      data = {}
       n = 0
       while n < numEntries
         # Parse Name
@@ -43,8 +59,14 @@ module.exports = FXXPlayer = (fxxBuffer, context) ->
         sounds[name].push FXZ buffer.buffer, context
         n += 1
 
+    ###*
+    @param name {string}
+    ###
     play: (name) ->
-      audioBuffer = rand sounds[name]
+      choices = sounds[name]
+      assert choices
+      audioBuffer = rand choices
+      assert audioBuffer
 
       unless audioBuffer
         console.warn "No sound named #{name}"
@@ -58,3 +80,5 @@ module.exports = FXXPlayer = (fxxBuffer, context) ->
     self.loadData fxxBuffer
 
   return self
+
+module.exports = FXXPlayer

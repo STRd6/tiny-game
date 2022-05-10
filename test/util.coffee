@@ -66,6 +66,7 @@ describe "Util", ->
 
     assert.equal rand([]), undefined
     assert.equal rand([1]), 1
+    assert rand(["a", "b", "c"])
 
   it "randId", ->
     assert randId()

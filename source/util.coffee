@@ -65,13 +65,23 @@ noop = -> return
 ###*
 Get a random integer <= `n` or a random element from an array.
 @template T
-@type {rand<T>}
+@param n {T[] | number}
+@type {import("../types/types").rand}
 ###
 rand = (n) ->
   if Array.isArray n
     n[floor random() * n.length]
   else
     floor n * random()
+
+#
+###*
+@template T
+@param array {T[]}
+###
+randItem = (array) ->
+  index = floor random() * array.length
+  array[index]
 
 # Generate a random string identifier
 randId = ->
@@ -449,6 +459,7 @@ module.exports = {
   noop
   rand
   randId
+  randItem
   remove
   squirrel3
   stopKeyboardHandler
@@ -476,10 +487,4 @@ module.exports = {
 ###*
 @template T
 @typedef {import("../types/types").wrap<T>} wrap
-###
-
-#
-###*
-@template T
-@typedef {import("../types/types").rand<T>} rand
 ###
