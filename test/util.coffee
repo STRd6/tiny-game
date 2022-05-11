@@ -158,6 +158,9 @@ describe "Util", ->
       m = new StateManager()
       def = m.bindProps props
 
+      #
+      ###* @type {import("../types/types").Entity & typeof def}###
+      #@ts-ignore
       o = Object.defineProperties {}, def
 
       o.$data = m.alloc()
@@ -193,6 +196,9 @@ describe "Util", ->
       m = new StateManager()
       def = m.bindProps props
 
+      #
+      ###* @type {import("../types/types").Entity & typeof def}###
+      #@ts-ignore
       o = Object.defineProperties {}, def
 
       o.$data = m.alloc()
@@ -225,6 +231,9 @@ describe "Util", ->
       def = m.bindProps
         r: RESERVE(24)
 
+      #
+      ###* @type {import("../types/types").Entity & typeof def}###
+      #@ts-ignore
       o = Object.defineProperties {}, def
 
       o.$data = m.alloc()
@@ -240,6 +249,9 @@ describe "Util", ->
       def = m.bindProps
         u16: U16A(16)
 
+      #
+      ###* @type {import("../types/types").Entity & typeof def}###
+      #@ts-ignore
       o = Object.defineProperties {}, def
       o.$data = m.alloc()
 

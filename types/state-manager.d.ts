@@ -36,8 +36,8 @@ export interface DataTypeDefinitions {
   TODO: is there a good way to return an array-like that is efficient and
   works well? */
   U16A: (length: number) => PropertyDefinition
-  FIXED16: (precision: number) => PropertyDefinition
-  FIXED32: (precision: number) => PropertyDefinition
+  FIXED16: (precision?: number) => PropertyDefinition
+  FIXED32: (precision?: number) => PropertyDefinition
   /** Reserve a fixed number of bytes */
   RESERVE: (length: number) => PropertyDefinition
 }
@@ -48,7 +48,7 @@ export interface StateManagerInstance {
   _lastBitOffset: number
 
   alloc(): DataView
-  bindProps(properties: PropertyDefinitions): Object
+  bindProps<T extends PropertyDefinitions>(properties: T): { [P in keyof T]: any }
   reserveBits(n: number): {
     offset: number
     bit: number

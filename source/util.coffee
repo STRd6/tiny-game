@@ -143,8 +143,7 @@ stopKeyboardHandler = (e, element, combo) ->
 
 #
 ###*
-@template T
-@type {wrap<T>}
+@type {wrap}
 ###
 wrap = (array, index) ->
   {length} = array
@@ -411,14 +410,17 @@ stateManageInstanceMethods =
     new DataView new ArrayBuffer @_size
 
   bindProps: (properties) ->
-    ###* @type {{[key: string]: PropertyDescriptor}} ###
+    ###* @type {{[P in keyof properties]: any}} ###
+    #@ts-ignore
     o = {}
     context = this
     Object.entries(properties).forEach ([key, definition]) ->
       if "bind" of definition
         {bind} = definition
+        #@ts-ignore typescript doesn't seem to know tha key is a kefof properties here
         o[key] = bind.call context
       else
+        #@ts-ignore typescript doesn't seem to know tha key is a kefof properties here
         o[key] = definition
 
     return o
@@ -480,15 +482,10 @@ module.exports = {
 @typedef {import("../types/types").StateManager} StateManager
 @typedef {import("../types/types").StateManagerInstance} StateManagerInstance
 @typedef {import("../types/types").PropertyDefinition} PropertyDefinition
+@typedef {import("../types/types").PropertyDefinitions} PropertyDefinitions
 
 @typedef {import("../types/types").mapBehaviors} mapBehaviors
 @typedef {import("../types/types").stopKeyboardHandler} stopKeyboardHandler
-
+@typedef {import("../types/types").wrap} wrap
 @typedef {import("../types/types").xorshift32} xorshift32
-###
-
-#
-###*
-@template T
-@typedef {import("../types/types").wrap<T>} wrap
 ###

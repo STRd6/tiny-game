@@ -21,8 +21,8 @@ export interface stopKeyboardHandler {
   (e: KeyboardEvent, element: HTMLElement, combo: string): boolean
 }
 
-export interface wrap<T> {
-  (array: T[], index: number): T | undefined
+export interface wrap {
+  <T>(array: T[], index: number): T | undefined
 }
 
 export interface xorshift32 {
