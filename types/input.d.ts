@@ -1,6 +1,6 @@
 // Input
 
-import { BIT, System, SystemConstructor, U32, U8 } from "./core"
+import { BIT, System, SystemConstructor, U16, U32, U8 } from "./core"
 
 export interface ButtonValues {
   a: BIT
@@ -70,6 +70,7 @@ export interface BufferedController extends Controller {
   data: Uint8Array
   description: string
   id: U8
+  key: U16
   latestData: number
   network?: boolean
   pressed: BufferedController
@@ -102,8 +103,8 @@ export interface BufferedController extends Controller {
 }
 
 export interface BufferedControllerConstructor {
-  (this: BufferedController, id: U8, clientId: U8, description: string, startTick: number, bufferSize?: number): BufferedController
-  new(id: U8, clientId: U8, description: string, startTick: number, bufferSize?: number): BufferedController
+  (this: BufferedController, id: U8, clientId: U8, description?: string, startTick?: number, bufferSize?: number): BufferedController
+  new(id: U8, clientId: U8, description?: string, startTick?: number, bufferSize?: number): BufferedController
 
   BUTTONS: [keyof ButtonValues]
   defaultBufferSize: number

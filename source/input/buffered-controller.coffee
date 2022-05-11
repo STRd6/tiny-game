@@ -8,7 +8,7 @@ InputSnapshot = require "./snapshot"
 @type {import("../../types/types").BufferedControllerConstructor}
 ###
 #@ts-ignore
-BufferedController = (id, clientId, description, startTick=-1, bufferSize=BufferedController.defaultBufferSize) ->
+BufferedController = (id, clientId, description="", startTick=-1, bufferSize=BufferedController.defaultBufferSize) ->
   # Input starts with a blank input at tick -1 so `prev` is valid for frame 0
   # ~1MB = 1 hour of input frames
 
