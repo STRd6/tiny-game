@@ -3,6 +3,7 @@ interface VibrationActuator {
 }
 
 interface Gamepad {
+  vibrate(...args: any[]): void // Added from gamepad.coffee
   vibrationActuator: VibrationActuator
 }
 
