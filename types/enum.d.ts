@@ -1,21 +1,16 @@
 // Enum TODO
 
-interface EnumInstance extends EnumPrototype {
-
-}
-
-interface EnumPrototype {
+export interface Enum {
   toJSON(): string
   toString(): string
   valueOf(): number
 }
 
-interface EnumConstructor {
-  new(name: string, value: number): EnumInstance
-  prototype: EnumPrototype
+export interface EnumConstructor {
+  new(name: string, value: number): Enum
   propertyFor(key: string): PropertyDescriptor
 }
 
-interface createEnum {
+export interface createEnum {
   (values: string | string[]): EnumConstructor
 }
