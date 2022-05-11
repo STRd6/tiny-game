@@ -17,10 +17,10 @@ parseName = (nameBuffer) ->
 #
 ###*
 @param fxxBuffer {ArrayBufferLike}
-@param context {AudioContext}
+@param [maybeContext] {AudioContext}
 ###
-FXXPlayer = (fxxBuffer, context) ->
-  context ?= new AudioContext
+FXXPlayer = (fxxBuffer, maybeContext) ->
+  context = maybeContext or new AudioContext
   #
   ###* @type {{[key: string]: AudioBuffer[]}} ###
   sounds = {}
@@ -55,7 +55,7 @@ FXXPlayer = (fxxBuffer, context) ->
         buffer = fxxData.slice(p + 16, p + 116)
         # Add to sounds list
         sounds[name] ||= []
-        #@ts-ignore TODO global FXZ
+        #@ts-ignore TODO import FXZ instead of global
         sounds[name].push FXZ buffer.buffer, context
         n += 1
 
@@ -64,12 +64,12 @@ FXXPlayer = (fxxBuffer, context) ->
     ###
     play: (name) ->
       choices = sounds[name]
-      assert choices
-      audioBuffer = rand choices
-      assert audioBuffer
+      if choices
+        audioBuffer = rand choices
 
       unless audioBuffer
         console.warn "No sound named #{name}"
+        return
 
       node = context.createBufferSource()
       node.buffer = audioBuffer

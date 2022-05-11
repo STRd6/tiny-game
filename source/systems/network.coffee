@@ -148,7 +148,8 @@ NetworkSystem = (game) ->
     # Close old connections
     if hosting
       hosting.connections.forEach (conn) -> conn.close()
-      hosting.peer?.disconnect()
+      try
+        hosting.peer?.disconnect()
 
     connections.length = 0
     nextClientId = 1

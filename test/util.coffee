@@ -11,6 +11,7 @@
   noop
   rand
   randId
+  randItem
   remove
   squirrel3
   stopKeyboardHandler
@@ -70,6 +71,11 @@ describe "Util", ->
 
   it "randId", ->
     assert randId()
+
+  it "randItem", ->
+    assert.equal randItem([]), undefined
+    assert.equal randItem([1]), 1
+    assert randItem(["a", "b", "c"])
 
   it "remove", ->
     a = [1, 2, 3]

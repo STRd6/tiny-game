@@ -105,7 +105,7 @@ export interface BufferedControllerConstructor {
   (this: BufferedController, id: U8, clientId: U8, description: string, startTick: number, bufferSize?: number): BufferedController
   new(id: U8, clientId: U8, description: string, startTick: number, bufferSize?: number): BufferedController
 
-  BUTTONS: string[]
+  BUTTONS: [keyof ButtonValues]
   defaultBufferSize: number
 }
 
