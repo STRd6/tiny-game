@@ -16,7 +16,7 @@ parseName = (nameBuffer) ->
 
 #
 ###*
-@param fxxBuffer {ArrayBufferLike}
+@param [fxxBuffer] {ArrayBufferLike}
 @param [maybeContext] {AudioContext}
 ###
 FXXPlayer = (fxxBuffer, maybeContext) ->

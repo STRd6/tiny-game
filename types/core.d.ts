@@ -1,6 +1,8 @@
 import Peer from "peerjs"
+import { DisplaySystem } from "./display"
 import { InputSystem } from "./input"
 import { ExtendedConnection, NetworkSystem } from "./network"
+import { SoundSystem } from "./sound"
 import { PropertyDefinition } from "./state-manager"
 
 declare const NSym: unique symbol
@@ -88,10 +90,13 @@ export interface GameInstance {
   pendingEntities: Entity[]
   replaying: boolean
   seed: U32
+  sound: SoundSystem
   system: {
     base: BaseSystem
+    display: DisplaySystem
     network: NetworkSystem
     input: InputSystem
+    sound: SoundSystem
   }
   systems: System[]
   textures: unknown[]

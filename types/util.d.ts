@@ -8,6 +8,10 @@ export interface mapBehaviors {
   (tags: string[] | Behavior[], table: Behaviors): Behavior[]
 }
 
+export interface noop {
+  (...args: any[]): undefined
+}
+
 export interface rand {
   <T>(n: T[]): T | undefined
   (n: number): number

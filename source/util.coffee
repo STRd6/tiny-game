@@ -59,7 +59,11 @@ mapBehaviors = (tags, table) ->
 
   return result
 
-noop = -> return
+#
+###*
+@type {import("../types/types").noop}
+###
+noop = -> return undefined
 
 #
 ###*
