@@ -1,7 +1,6 @@
 esbuild = require 'esbuild'
 
 watch = process.argv.includes '--watch'
-#@ts-ignore
 minify = !watch || process.argv.includes '--minify'
 sourcemap = true
 
@@ -10,7 +9,7 @@ esbuild.build({
   tsconfig: "./tsconfig.json"
   bundle: true
   sourcemap
-  minify: false
+  minify
   watch
   platform: 'browser'
   outfile: 'dist/tiny-game.js'

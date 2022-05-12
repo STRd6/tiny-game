@@ -7,8 +7,11 @@ describe "Sound", ->
     sound.play('wat')
 
   it "should not play sounds when game is replaying", ->
+    #
+    ###* @type {import("../../types/types").GameInstance} ###
+    #@ts-ignore
     game =
       replaying: true
     sound = SoundSystem(game)
-    sound.create()
+    sound.create(game)
     sound.play('wat')

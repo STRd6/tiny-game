@@ -3,6 +3,8 @@ Display = require "../../source/systems/display"
 
 otherBehavior = {}
 
+{KeyboardEvent} = window
+
 describe "Display", ->
   it "should do stuff", ->
     displaySystem = Display
@@ -125,16 +127,16 @@ describe "Display", ->
     called = false
     displaySystem.app.view.requestFullscreen = ->
       called = true
+      Promise.resolve()
 
     # Ignores other key presses
-    displaySystem.fullscreenHandler
+    displaySystem.fullscreenHandler new KeyboardEvent "keydown",
       key: "a"
 
     assert !called
 
-    mockEvent =
+    mockEvent = new KeyboardEvent "keydown",
       key: "F11"
-      preventDefault: ->
     displaySystem.fullscreenHandler mockEvent
 
     assert called
@@ -142,9 +144,11 @@ describe "Display", ->
     do (origDocument=document) ->
       called = false
       global.document =
+        #@ts-ignore
         fullscreenElement: document
         exitFullscreen: ->
           called = true
+          Promise.resolve()
 
       assert !called
       displaySystem.fullscreenHandler mockEvent

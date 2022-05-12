@@ -61,7 +61,6 @@
   },
   "scripts": {
     "build": "bash script/prepublish && coffee build/main.coffee",
-    "build-b": "bash script/prepublish && bash script/browser",
     "doc": "typedoc types/types.d.ts",
     "prepublish": "bash script/prepublish",
     "test": "nyc mocha"

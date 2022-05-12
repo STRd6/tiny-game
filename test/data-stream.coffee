@@ -42,7 +42,9 @@ describe "DataStream", ->
     bytes = stream.bytes()
     assert.equal bytes.byteLength, 0
 
+    #@ts-ignore number -> I32
     stream.putInt32 5
+    #@ts-ignore number -> I32
     stream.putInt32 45
 
     bytes = stream.bytes()
