@@ -8,7 +8,8 @@
   NineSlicePlane
   Sprite
   Texture
-} = require "pixi.js"
+  #@ts-ignore
+} = PIXI
 
 Highlight9S = Texture.from "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAAADCAQAAAD8IX00AAAAEklEQVQI12P4DwYMQMQApkAAAKdtD/E89U+YAAAAAElFTkSuQmCC"
 
