@@ -2,12 +2,8 @@
 
 ## Util
 
-###*
-# Approach target by amount
-# @param x {number} Starting number
-# @param t {number} Target number
-# @param amount {number} Maximum amount
-###
+#
+###* @type {Util["approach"]} ###
 approach = (x, t, amount) ->
   if x > t
     max x - amount, t
@@ -17,9 +13,7 @@ approach = (x, t, amount) ->
     t
 
 #
-###*
-@param arr {number[]} Array of numbers to average
-###
+###* @type {Util["average"]} ###
 average = (arr) ->
   if arr.length is 0
     return
@@ -31,13 +25,7 @@ average = (arr) ->
   sum / arr.length
 
 #
-###*
-Clamp a value to be between low and high.
-
-@param v {number}
-@param low {number}
-@param high {number}
-###
+###* @type {Util["clamp"]} ###
 clamp = (v, low, high) ->
   max min(v, high), low
 
@@ -61,7 +49,7 @@ mapBehaviors = (tags, table) ->
 
 #
 ###*
-@type {import("../types/types").noop}
+@type {Util["noop"]}
 ###
 noop = -> return undefined
 
@@ -69,7 +57,7 @@ noop = -> return undefined
 ###*
 @template T
 @param n {T[] | number}
-@type {import("../types/types").rand}
+@type {Util["rand"]}
 ###
 rand = (n) ->
   if Array.isArray n
@@ -78,24 +66,18 @@ rand = (n) ->
     floor n * random()
 
 #
-###*
-@template T
-@param array {T[]}
-###
-randItem = (array) ->
-  index = floor random() * array.length
-  array[index]
-
-# Generate a random string identifier
+###* @type {Util["randId"]} ###
 randId = ->
   (random() * pow(2, 53)).toString(36)
 
 #
-###*
-@template T
-@param array {T[]}
-@param item {T}
-###
+###* @type {Util["randItem"]} ###
+randItem = (array) ->
+  index = floor random() * array.length
+  array[index]
+
+#
+###* @type {Util["remove"]} ###
 remove = (array, item) ->
   index = array.indexOf(item)
 
@@ -105,16 +87,7 @@ remove = (array, item) ->
   return undefined
 
 #
-###*
-# Returns an unsigned integer containing 31 reasonably-well-scrambled
-# bits, based on a given (signed) integer input parameter `n` and optional
-# `seed`.  Kind of like looking up a value in a non-existent table of 2^31
-# previously generated random numbers.
-# https://www.youtube.com/watch?v=LWFzPP8ZbdU
-#
-# @param n {number}
-# @param seed {number}
-###
+###* @type {Util["squirrel3"]} ###
 squirrel3 = (n, seed=0) ->
   n *= 0xb5297a4d
   n += seed
@@ -140,9 +113,7 @@ stopKeyboardHandler = (e, element, combo) ->
     (!!element.contentEditable && element.contentEditable == 'true')
 
 #
-###*
-@type {Util["wrap"]}
-###
+###* @type {Util["wrap"]} ###
 wrap = (array, index) ->
   {length} = array
   index = floor(index) % length
@@ -166,9 +137,7 @@ xorshift32 = (state) ->
 # Store controller snapshots as byte arrays so they can travel the network
 
 #
-###*
-@param f {number}
-###
+###* @type {Util["floatToUint8"]} ###
 floatToUint8 = (f) ->
   if f < 0
     v = (f * 128)|0
@@ -177,12 +146,11 @@ floatToUint8 = (f) ->
   else
     v = 0
 
+  #@ts-ignore number -> U8
   v + 128
 
 #
-###*
-@param n {number}
-###
+###* @type {Util["uint8ToFloat"]} ###
 uint8ToFloat = (n) ->
   v = n - 128
   if v < 0
@@ -193,10 +161,7 @@ uint8ToFloat = (n) ->
     0
 
 #
-###*
-0 zero 1-8 negative axis -0.125 - -1.0, 9-15 positive axis 0.25-1.0
-@param f {number}
-###
+###* @type {Util["axisToNibble"]} ###
 axisToNibble = (f) ->
   # This could be < 0 instead of <= -0.25. The purpose is to discard jittery
   # values near 0 for better input compression options.
@@ -210,9 +175,7 @@ axisToNibble = (f) ->
   v & 0xf
 
 #
-###*
-@param n {number}
-###
+###* @type {Util["nibbleToAxis"]} ###
 nibbleToAxis = (n)  ->
   v = (n & 0xf)
 
@@ -224,9 +187,7 @@ nibbleToAxis = (n)  ->
     (v - 7) / 8
 
 #
-###*
-@param v {number}
-###
+###* @type {Util["triggerToNibble"]} ###
 triggerToNibble = (v) ->
   if v > 0
     (v * 16 - 1) & 0xf
@@ -234,23 +195,12 @@ triggerToNibble = (v) ->
     0
 
 #
-###*
-Convert a number to hex padding up to length with leading zeroes
-@param n {number}
-@param length {number}
-###
+###* @type {Util["toHex"]} ###
 toHex = (n, length=2) ->
   n.toString(16).padStart(length, "0")
 
 #
-###*
-DataType manages bit and byte access for entity properties. bind is called in
-the context of the state manager. The property methods execute in the context
-of the entity object. Don't let the different `this` scopes fool you.
-
-@type {DataTypeDefinitions}
-###
-
+###* @type {DataTypeDefinitions} ###
 DataType =
   # 0 or 1
   BIT:

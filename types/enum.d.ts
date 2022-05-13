@@ -1,5 +1,3 @@
-// Enum TODO
-
 export interface Enum {
   toJSON(): string
   toString(): string
@@ -11,6 +9,4 @@ export interface EnumConstructor {
   propertyFor(key: string): PropertyDescriptor
 }
 
-export interface createEnum {
-  (values: string | string[]): EnumConstructor
-}
+export function createEnum(values: string | string[]): EnumConstructor
