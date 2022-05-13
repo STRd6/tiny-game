@@ -49,7 +49,7 @@ bits, based on a given (signed) integer input parameter `n` and optional
 previously generated random numbers.
 https://www.youtube.com/watch?v=LWFzPP8ZbdU
 */
-export function squirrel3(n: number, seed: number): number
+export function squirrel3(n: number, seed?: number): number
 
 /**
  * Given a keyboard event returns true if the event is taking place inside an
