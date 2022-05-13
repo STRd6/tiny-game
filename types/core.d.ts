@@ -71,7 +71,7 @@ export interface Behaviors {
 
 export interface ClassDefinition {
   behaviors: string[]
-  defaults: unknown
+  defaults?: unknown
   properties?: PropertyDefinitions
 }
 
