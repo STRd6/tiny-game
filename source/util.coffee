@@ -42,7 +42,7 @@ clamp = (v, low, high) ->
   max min(v, high), low
 
 #
-###* @type {mapBehaviors} ###
+###* @type {Util["mapBehaviors"]} ###
 mapBehaviors = (tags, table) ->
   result = []
   i = 0
@@ -67,7 +67,6 @@ noop = -> return undefined
 
 #
 ###*
-Get a random integer <= `n` or a random element from an array.
 @template T
 @param n {T[] | number}
 @type {import("../types/types").rand}
@@ -117,18 +116,17 @@ remove = (array, item) ->
 # @param seed {number}
 ###
 squirrel3 = (n, seed=0) ->
-    n *= 0xb5297a4d
-    n += seed
-    n ^= n >> 8
-    n += 0x68e31da4
-    n ^= n << 8
-    n *= 0x1b56c4e9
-    n ^= n >> 8
+  n *= 0xb5297a4d
+  n += seed
+  n ^= n >> 8
+  n += 0x68e31da4
+  n ^= n << 8
+  n *= 0x1b56c4e9
+  n ^= n >> 8
 
-    return n
+  return n
 
-# Override default stop callback behavior
-###* @type {stopKeyboardHandler} ###
+###* @type {Util["stopKeyboardHandler"]} ###
 #@ts-ignore e is intentionally unused
 stopKeyboardHandler = (e, element, combo) ->
   # Don't stop for ctrl+key etc. even in textareas
@@ -143,7 +141,7 @@ stopKeyboardHandler = (e, element, combo) ->
 
 #
 ###*
-@type {wrap}
+@type {Util["wrap"]}
 ###
 wrap = (array, index) ->
   {length} = array
@@ -154,14 +152,14 @@ wrap = (array, index) ->
   return array[index]
 
 #
-###* @type {xorshift32} ###
+###* @type {Util["xorshift32"]} ###
 xorshift32 = (state) ->
-	x = state.seed
-	x ^= x << 13
-	x ^= x >> 17
-	x ^= x << 5
+  x = state.seed
+  x ^= x << 13
+  x ^= x >> 17
+  x ^= x << 5
 
-	return state.seed = x
+  return state.seed = x
 
 ## Input
 
@@ -481,11 +479,6 @@ module.exports = {
 @typedef {import("../types/types").DataTypeDefinitions} DataTypeDefinitions
 @typedef {import("../types/types").StateManager} StateManager
 @typedef {import("../types/types").StateManagerInstance} StateManagerInstance
-@typedef {import("../types/types").PropertyDefinition} PropertyDefinition
-@typedef {import("../types/types").PropertyDefinitions} PropertyDefinitions
 
-@typedef {import("../types/types").mapBehaviors} mapBehaviors
-@typedef {import("../types/types").stopKeyboardHandler} stopKeyboardHandler
-@typedef {import("../types/types").wrap} wrap
-@typedef {import("../types/types").xorshift32} xorshift32
+@typedef {import("../types/types").util} Util
 ###
