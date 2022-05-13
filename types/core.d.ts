@@ -3,7 +3,7 @@ import { DisplaySystem } from "./display"
 import { InputSystem } from "./input"
 import { ExtendedConnection, NetworkSystem } from "./network"
 import { SoundSystem } from "./sound"
-import { PropertyDefinition } from "./state-manager"
+import { PropertyDefinition, PropertyDefinitions } from "./state-manager"
 
 declare const NSym: unique symbol
 
@@ -69,6 +69,12 @@ export interface Behaviors {
   [key: string]: Behavior
 }
 
+export interface ClassDefinition {
+  behaviors: string[]
+  defaults: unknown
+  properties?: PropertyDefinitions
+}
+
 export interface Configuration {
   screenWidth: number
   screenHeight: number
@@ -104,6 +110,7 @@ export interface GameInstance {
 
   addEntity(e: EntitySource): unknown
   addBehaviors(behaviors: Behaviors): unknown
+  addClass(definition: ClassDefinition): EntityConstructor
   classChecksum(): U32
   create(): GameInstance
   createEntity(e: Entity): Entity

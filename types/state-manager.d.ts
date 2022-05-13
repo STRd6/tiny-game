@@ -1,15 +1,9 @@
-import { Behavior, Entity } from "./core"
+import { Entity } from "./core"
 
 export interface BoundDescriptor<T> extends PropertyDescriptor {
   get?(this: T): any
   set?(this: T, v: any): any
   value?: (this: T) => any
-}
-
-export interface ClassDefinition {
-  behaviors: Behavior[]
-  defaults: unknown
-  properties: PropertyDefinitions
 }
 
 export type PropertyDefinition = {
