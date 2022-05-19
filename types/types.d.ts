@@ -9,14 +9,18 @@ export * from "./network"
 export * from "./state-manager"
 export * from "./sound"
 
+import * as PIXI from "pixi.js"
+import * as ui from "./ui"
 import * as util from "./util"
 
 export {
-  util
+  PIXI,
+  util,
+  ui,
 }
 
-export interface TinyGame {
-  util: typeof util
+export declare const TinyGame: {
+  PIXI: typeof PIXI,
+  util: typeof util,
+  ui: typeof ui,
 }
-
-export default TinyGame

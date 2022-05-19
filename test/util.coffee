@@ -52,8 +52,11 @@ describe "Util", ->
     assert.equal floatToUint8(-1), 0
     assert.equal floatToUint8(1), 255
 
+    #@ts-ignore number -> U8
     assert.equal uint8ToFloat(128), 0
+    #@ts-ignore number -> U8
     assert.equal uint8ToFloat(0), -1
+    #@ts-ignore number -> U8
     assert.equal uint8ToFloat(255), 1
 
   it "map behaviors", ->
@@ -92,6 +95,9 @@ describe "Util", ->
 
   it "stopKeyboardHandler", ->
     e = new window.KeyboardEvent("keydown")
+    #
+    ###* @type {HTMLElement} ###
+    #@ts-ignore
     element =
       tagName: "INPUT"
     combo = "ctrl+s"
@@ -101,6 +107,7 @@ describe "Util", ->
     combo = "1"
     assert.equal stopKeyboardHandler(e, element, combo), true
 
+    #@ts-ignore
     element =
       contentEditable: "true"
     assert.equal stopKeyboardHandler(e, element, combo), true
@@ -178,6 +185,7 @@ describe "Util", ->
       assert.equal o.b8, 1
 
       assert.equal o.u, 0
+      #@ts-ignore number -> U8
       o.u = 1
       assert.equal o.u, 1
 
@@ -203,18 +211,23 @@ describe "Util", ->
 
       o.$data = m.alloc()
 
+      #@ts-ignore number -> subtype
       o.i8 = 16
       assert.equal o.i8, 16
 
+      #@ts-ignore number -> subtype
       o.i16 = 16
       assert.equal o.i16, 16
 
+      #@ts-ignore number -> subtype
       o.i32 = 16
       assert.equal o.i32, 16
 
+      #@ts-ignore number -> subtype
       o.u16 = 16
       assert.equal o.u16, 16
 
+      #@ts-ignore number -> subtype
       o.u32 = 16
       assert.equal o.u32, 16
 

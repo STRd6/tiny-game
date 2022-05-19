@@ -15,8 +15,7 @@ Highlight9S = Texture.from "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAMAAA
 
 #
 ###*
-@param text {string}
-@param action {(this: Container, e: any) => any}
+@type {import("../types/ui").UIButton}
 ###
 UIButton = (text, action) ->
   textObject = new BitmapText text,
@@ -49,10 +48,9 @@ UIButton = (text, action) ->
 
   return button
 
-# A basic health bar
 # TODO: interface is a little clunky, room for improvement
 ###*
-@param height {number}
+@type {import("../types/ui").HealthBar}
 ###
 HealthBar = (height) ->
   bgColor = 0x000000

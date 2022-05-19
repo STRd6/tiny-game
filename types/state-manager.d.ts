@@ -1,39 +1,44 @@
-import { Entity } from "./core"
+import { BIT, Entity, I16, I32, I8, U16, U32, U8, UNIT } from "./core"
 
-export interface BoundDescriptor<T> extends PropertyDescriptor {
-  get?(this: T): any
-  set?(this: T, v: any): any
-  value?: (this: T) => any
+export interface BoundAccessorDescriptor<T, V = any> extends AccessorDescriptor {
+  get?(this: T): V
+  set?(this: T, v: V): void
 }
 
-export type PropertyDefinition = {
+export type BoundDescriptor<T, V> = DataDescriptor<V> | BoundAccessorDescriptor<T, V>
+
+export type DefinitionValue<T> = T extends PropertyDefinition<infer V> ? V : any
+
+export type BoundDefinition<T> = {
   bytes: number
   bits?: number
-  bind: (this: StateManagerInstance) => BoundDescriptor<Entity>
-} | BoundDescriptor<Entity>
+  bind: (this: StateManagerInstance) => BoundDescriptor<Entity, T>
+}
+
+export type PropertyDefinition<V = any> = BoundDefinition<V> | BoundDescriptor<Entity, V>
 
 export interface PropertyDefinitions {
   [key: string]: PropertyDefinition
 }
 
 export interface DataTypeDefinitions {
-  BIT: PropertyDefinition
-  I8: PropertyDefinition
-  I16: PropertyDefinition
-  I32: PropertyDefinition
-  UNIT: PropertyDefinition
-  U8: PropertyDefinition
-  U16: PropertyDefinition
-  U32: PropertyDefinition
+  BIT: PropertyDefinition<BIT>
+  I8: PropertyDefinition<I8>
+  I16: PropertyDefinition<I16>
+  I32: PropertyDefinition<I32>
+  UNIT: PropertyDefinition<UNIT>
+  U8: PropertyDefinition<U8>
+  U16: PropertyDefinition<U16>
+  U32: PropertyDefinition<U32>
   /** ! DANGER: this writes in little endian format (actually machine specific)
   whereas DataView writes in big endian by default.
   TODO: is there a good way to return an array-like that is efficient and
   works well? */
-  U16A: (length: number) => PropertyDefinition
-  FIXED16: (precision?: number) => PropertyDefinition
-  FIXED32: (precision?: number) => PropertyDefinition
+  U16A: (length: number) => PropertyDefinition<U16[]>
+  FIXED16: (precision?: number) => PropertyDefinition<number>
+  FIXED32: (precision?: number) => PropertyDefinition<number>
   /** Reserve a fixed number of bytes */
-  RESERVE: (length: number) => PropertyDefinition
+  RESERVE: (length: number) => PropertyDefinition<undefined>
 }
 
 export interface StateManagerInstance {
@@ -42,7 +47,7 @@ export interface StateManagerInstance {
   _lastBitOffset: number
 
   alloc(): DataView
-  bindProps<T extends PropertyDefinitions>(properties: T): { [P in keyof T]: any }
+  bindProps<T extends PropertyDefinitions>(properties: T): { [P in keyof T]: DefinitionValue<T[P]> }
   reserveBits(n: number): {
     offset: number
     bit: number

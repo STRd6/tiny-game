@@ -213,7 +213,9 @@ DataType =
       get: ->
         (@$data.getUint8(offset) & (1 << bit)) >> bit
       set: (v) ->
-        @$data.setUint8 offset, @$data.getUint8(offset) & (~(1 << bit)) | ((1 & v) << bit)
+        #@ts-ignore arithmetic
+        n = 1 & v
+        @$data.setUint8 offset, @$data.getUint8(offset) & (~(1 << bit)) | (n << bit)
 
   # -1 or 1
   UNIT:
@@ -226,8 +228,9 @@ DataType =
       get: ->
         (((@$data.getUint8(offset) & (1 << bit)) >> bit) - 0.5) * 2
       set: (v) ->
-        v = (v / 2) + 0.5
-        @$data.setUint8 offset, @$data.getUint8(offset) & (~(1 << bit)) | ((1 & v) << bit)
+        #@ts-ignore
+        n = (v >= 0)|0
+        @$data.setUint8 offset, @$data.getUint8(offset) & (~(1 << bit)) | (n << bit)
 
   # 0-0xff (0-255)
   U8:
@@ -340,6 +343,7 @@ DataType =
       @reserveBytes(length)
 
       get: ->
+        return undefined
 
 #
 ###* @type {StateManager} ###

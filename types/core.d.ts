@@ -1,4 +1,5 @@
 import Peer from "peerjs"
+import { Texture } from "pixi.js"
 import { DisplaySystem } from "./display"
 import { InputSystem } from "./input"
 import { ExtendedConnection, NetworkSystem } from "./network"
@@ -7,7 +8,8 @@ import { PropertyDefinition, PropertyDefinitions } from "./state-manager"
 
 declare const NSym: unique symbol
 
-export type BIT = 0 | 1
+export type UNIT = -1 | 1
+export type BIT = 0 | 1 | true | false
 export type U8 = number & { [NSym]: "U8" }
 export type U16 = number & { [NSym]: "U16" }
 export type U32 = number & { [NSym]: "U32" }
@@ -105,7 +107,8 @@ export interface GameInstance {
     sound: SoundSystem
   }
   systems: System[]
-  textures: unknown[]
+  /** Store textures by name and id for ease of use */
+  textures: Texture[] & { [key: string]: Texture }
   tick: U32
 
   addEntity(e: EntitySource): unknown

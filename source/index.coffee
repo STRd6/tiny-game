@@ -305,6 +305,9 @@ TinyGame = ->
     system: {}
 
     # Store textures by name and id for ease of use
+    ###*
+    @type {import("../types").GameInstance["textures"]}
+    ###
     textures: []
 
     # Current game tick (frames)
