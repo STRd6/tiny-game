@@ -42,7 +42,7 @@ export type DisplayBehavior =
   DisplayHudBehavior |
   DisplayObjectBehavior
 
-export interface Camera {
+export interface Camera extends PIXI.Container {
   entity: Entity
   entityMap: Map<number, DisplayObject>
   viewport: PIXI.Container
